@@ -46,7 +46,7 @@ user: what's my name?
 pybot: You're Sam.
 ```
 
-Type `/reset` to start a new conversation and `/exit` to quit. PyBot takes a few seconds to start, because Python has half a million lines of code to load, and about a second to reply.
+Type `/reset` to clear the screen and start a new conversation, and `/exit` to quit. PyBot takes a few seconds to start, because Python has half a million lines of code to load, and about a second to reply.
 
 To ask one question and exit, or to pipe messages in and get one reply per line:
 

@@ -35,8 +35,10 @@ TAGLINE = "A chatbot written in plain Python. No weights, no training, just rule
 USER_PREFIX = "user: "
 BOT_PREFIX = "pybot: "
 
+HINT = "Type a message and press Enter. /reset starts a new conversation, /exit quits."
+
 HELP = """Commands:
-  /reset   start a new conversation (PyBot forgets what was said)
+  /reset   clear the screen and start again (PyBot forgets what was said)
   /help    show this help
   /exit    quit (Ctrl+D works too)"""
 
@@ -91,19 +93,35 @@ def pipe(runtime, args):
             print(details(module, seconds), file=sys.stderr, flush=True)
 
 
+def opening():
+    """What the chat shows when it starts, and again after /reset."""
+    print(LOGO + "\n")
+    print(TAGLINE)
+    print(HINT + "\n")
+
+
+def clear_screen():
+    """Wipe the terminal, including what has scrolled off the top."""
+    if os.name == "nt":
+        os.system("cls")
+    else:
+        # Cursor to the top, erase the screen, erase the scrollback.
+        sys.stdout.write("\033[H\033[2J\033[3J")
+        sys.stdout.flush()
+
+
 def chat(runtime, args):
     """An interactive conversation in the terminal.
 
     Every turn is labelled with who is speaking: `user: ` in front of what you type and
-    `pybot: ` in front of the reply.
+    `pybot: ` in front of the reply. /reset clears the conversation: PyBot forgets it, and in a
+    terminal the screen is wiped back to the opening.
     """
     try:
         import readline  # noqa: F401 - line editing and history for input()
     except ImportError:
         pass
-    print(LOGO + "\n")
-    print(TAGLINE)
-    print("Type a message and press Enter. /reset starts a new conversation, /exit quits.\n")
+    opening()
     memory = {}
     first = args.prompt
     while True:
@@ -123,7 +141,11 @@ def chat(runtime, args):
             memory = {}
             if args.seed is not None:
                 random.seed(args.seed)
-            print("New conversation.\n")
+            if sys.stdout.isatty():
+                clear_screen()
+                opening()
+            else:
+                print("New conversation.\n")
             continue
         if command == "/help":
             print(HELP + "\n")
