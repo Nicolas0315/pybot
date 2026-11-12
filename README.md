@@ -1,3 +1,5 @@
+<p align="center"><img src="assets/banner.png" alt="PyBot: pure Python code without AI" width="100%"></p>
+
 # PyBot
 
 **Can Python be a chatbot?**
@@ -6,7 +8,7 @@ LLMs drive today’s chatbots and agents, but chatbots long predate them. Sixty 
 
 We challenged a swarm of over 1,000 agents to build a chatbot entirely in Python: no weights, no training, just if-else branches, regex patterns and lookup tables. The agents wrote and evaluated over 5,000 versions, and the chatbot’s win rate on [SmolTalkBench](https://huggingface.co/datasets/HuggingFaceSwarms/SmolTalkBench), where an LLM judge compares each reply with a reference answer, climbed from 0% to 26%. That puts it on par with SmolLM-360M-Instruct, which just a few years ago was state of the art for models under 1B parameters.
 
-![PyBot's win rate in orange on the left axis and its lines of Python code in blue on the right axis, over the evaluated commits, with three SmolLM baselines](assets/progress.png)
+![PyBot's win rate over the evaluated commits on a log scale: every commit as a dot and the best so far as a line, with three SmolLM baselines as dashed lines, and its lines of Python code in grey on the right axis](assets/progress.png)
 
 The result is PyBot: around 500k lines of code that can answer everyday questions, backed by 550k lines of tests the agents wrote themselves. Try it in your terminal below, or in the browser on the [PyBot Space](https://huggingface.co/spaces/HuggingFaceSwarms/PyBot), where each reply shows which of PyBot’s modules produced it.
 
@@ -71,7 +73,7 @@ For a `pybot` command you can run from anywhere, install the clone with `pip ins
 | `bot/` | PyBot itself: 368 Python files and about 530,000 lines, exactly as the swarm wrote them |
 | `pybot.py` | the command line shown above. It contains no chatbot logic |
 | `tests/` | tests for the command line: `python -m unittest discover -s tests` |
-| `assets/` | the chart |
+| `assets/` | the banner and the chart |
 
 Every turn, each module in `bot/modules/` may propose a reply, and an arbiter (`bot/modules/arbiter.py`) picks the one you get. The modules build on four shared parts:
 
