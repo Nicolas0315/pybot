@@ -19,6 +19,10 @@ __version__ = "0.1.0"
 # The commit of HuggingFaceSwarms/SwarmChat-v8 that `bot/` was copied from.
 SOURCE_COMMIT = "3185a7a9bc50491205b19f64839f8c70962c4369"
 
+# What the interactive chat puts in front of each turn.
+USER_PREFIX = "user: "
+BOT_PREFIX = "pybot: "
+
 HELP = """Commands:
   /reset   start a new conversation (PyBot forgets what was said)
   /help    show this help
@@ -76,7 +80,11 @@ def pipe(runtime, args):
 
 
 def chat(runtime, args):
-    """An interactive conversation in the terminal."""
+    """An interactive conversation in the terminal.
+
+    Every turn is labelled with who is speaking: `user: ` in front of what you type and
+    `pybot: ` in front of the reply.
+    """
     try:
         import readline  # noqa: F401 - line editing and history for input()
     except ImportError:
@@ -88,10 +96,10 @@ def chat(runtime, args):
     while True:
         if first is not None:
             text, first = first, None
-            print("> " + text)
+            print(USER_PREFIX + text)
         else:
             try:
-                text = input("> ")
+                text = input(USER_PREFIX)
             except (EOFError, KeyboardInterrupt):
                 print()
                 break
@@ -110,7 +118,7 @@ def chat(runtime, args):
         if not command:
             continue
         reply, module, seconds = answer(runtime, text, memory)
-        print(reply)
+        print(BOT_PREFIX + reply)
         if args.verbose:
             print(details(module, seconds))
         print()

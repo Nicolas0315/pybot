@@ -23,17 +23,17 @@ python -m pybot
 That starts a chat in your terminal:
 
 ```text
-> hi, i'm Sam
-Nice to meet you, Sam. What can I help with?
+user: hi, i'm Sam
+pybot: Nice to meet you, Sam. What can I help with?
 
-> my kettle is full of limescale, how do i get rid of it?
-Half fill the kettle with equal parts water and white vinegar, or a sachet of citric acid, boil it and leave it half an hour, then tip it out and boil fresh water twice before you use it again. In a hard-water area do it every couple of months: the scale forms because hard water leaves calcium behind as it boils, and a thick layer makes the kettle slow and puts a scum on the tea.
+user: my kettle is full of limescale, how do i get rid of it?
+pybot: Half fill the kettle with equal parts water and white vinegar, or a sachet of citric acid, boil it and leave it half an hour, then tip it out and boil fresh water twice before you use it again. In a hard-water area do it every couple of months: the scale forms because hard water leaves calcium behind as it boils, and a thick layer makes the kettle slow and puts a scum on the tea.
 
-> how long does that take
-Half an hour.
+user: how long does that take
+pybot: Half an hour.
 
-> what's my name?
-You're Sam.
+user: what's my name?
+pybot: You're Sam.
 ```
 
 Type `/reset` to start a new conversation and `/exit` to quit. PyBot takes a few seconds to start, because Python has half a million lines of code to load, and about a second to reply.
@@ -60,6 +60,7 @@ For a `pybot` command you can run from anywhere, install the clone with `pip ins
 |---|---|
 | `bot/` | PyBot itself: 368 Python files and about 530,000 lines, exactly as the swarm wrote them |
 | `pybot.py` | the command line shown above. It contains no chatbot logic |
+| `tests/` | tests for the command line: `python -m unittest discover -s tests` |
 | `assets/` | the chart |
 
 Every turn, each module in `bot/modules/` may propose a reply, and an arbiter (`bot/modules/arbiter.py`) picks the one you get. The modules build on four shared parts:
