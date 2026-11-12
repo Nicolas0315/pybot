@@ -46,6 +46,13 @@ def chat(typed, **options):
     return prompts, out.getvalue().splitlines()
 
 
+class ChatOpening(unittest.TestCase):
+    def test_the_chat_opens_with_one_line_saying_what_pybot_is(self):
+        _, lines = chat(["/exit"])
+        self.assertEqual(lines[0], "PyBot: a chatbot written in plain Python. No weights, no training, just rules.")
+        self.assertIn("/reset", lines[1])
+
+
 class ChatTurnsAreLabelled(unittest.TestCase):
     def test_the_prompt_is_user_and_every_reply_starts_with_pybot(self):
         prompts, lines = chat(["hello", "how do i descale a kettle", "/exit"])
