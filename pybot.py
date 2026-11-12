@@ -19,6 +19,9 @@ __version__ = "0.1.0"
 # The commit of HuggingFaceSwarms/SwarmChat-v8 that `bot/` was copied from.
 SOURCE_COMMIT = "3185a7a9bc50491205b19f64839f8c70962c4369"
 
+# The first line of the interactive chat.
+BANNER = "PyBot: a chatbot written in plain Python. No weights, no training, just rules."
+
 # What the interactive chat puts in front of each turn.
 USER_PREFIX = "user: "
 BOT_PREFIX = "pybot: "
@@ -89,7 +92,7 @@ def chat(runtime, args):
         import readline  # noqa: F401 - line editing and history for input()
     except ImportError:
         pass
-    print("PyBot (commit %s): a chatbot written in plain Python. No model, no weights." % SOURCE_COMMIT[:12])
+    print(BANNER)
     print("Type a message and press Enter. /reset starts a new conversation, /exit quits.\n")
     memory = {}
     first = args.prompt
