@@ -1,5 +1,11 @@
 <p align="center"><img src="assets/banner.png" alt="PyBot: pure Python code without AI" width="100%"></p>
 
+<div align="center">
+  <a href="https://huggingface.co/spaces/HuggingFaceSwarms/PyBot" target="_blank">
+    <img alt="Hugging Face Space: PyBot demo" src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Demo-ffc107?color=ffc107&logoColor=white" />
+  </a>
+</div>
+
 # PyBot: can Python be a chatbot?
 
 LLMs drive today’s chatbots and agents, but chatbots long predate them. Sixty years ago, [ELIZA](https://en.wikipedia.org/wiki/ELIZA) held conversations by matching patterns in what the user typed and answering with predefined templates. It could seem insightful, but its repertoire was narrow, and expanding it meant writing more rules by hand. How far could a rule-based chatbot go if a swarm of agents did that work instead?
