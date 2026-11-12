@@ -47,10 +47,22 @@ def chat(typed, **options):
 
 
 class ChatOpening(unittest.TestCase):
-    def test_the_chat_opens_with_one_line_saying_what_pybot_is(self):
+    def test_the_chat_opens_with_the_name_in_ascii_art_then_what_pybot_is(self):
         _, lines = chat(["/exit"])
-        self.assertEqual(lines[0], "PyBot: a chatbot written in plain Python. No weights, no training, just rules.")
-        self.assertIn("/reset", lines[1])
+        logo = pybot.LOGO.split("\n")
+        self.assertEqual(lines[:len(logo)], logo)
+        self.assertEqual(lines[len(logo)], "")
+        self.assertEqual(lines[len(logo) + 1],
+                         "A chatbot written in plain Python. No weights, no training, just rules.")
+        self.assertIn("/reset", lines[len(logo) + 2])
+
+    def test_the_art_is_plain_ascii_and_fits_a_narrow_terminal(self):
+        logo = pybot.LOGO.split("\n")
+        self.assertEqual(len(logo), 6)
+        for line in logo:
+            self.assertLessEqual(len(line), 80)
+            self.assertEqual(line, line.rstrip())
+            self.assertTrue(all(ord(character) < 128 for character in line))
 
 
 class ChatTurnsAreLabelled(unittest.TestCase):

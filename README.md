@@ -23,6 +23,16 @@ python -m pybot
 That starts a chat in your terminal:
 
 ```text
+    ____        ____        __
+   / __ \__  __/ __ )____  / /_
+  / /_/ / / / / __  / __ \/ __/
+ / ____/ /_/ / /_/ / /_/ / /_
+/_/    \__, /_____/\____/\__/
+      /____/
+
+A chatbot written in plain Python. No weights, no training, just rules.
+Type a message and press Enter. /reset starts a new conversation, /exit quits.
+
 user: hi, i'm Sam
 pybot: Nice to meet you, Sam. What can I help with?
 
