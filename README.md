@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/banner.png" alt="PyBot: pure Python code without AI" width="100%"></p>
+<p align="center"><img src="assets/banner.png" alt="PyBot: no weights, no training, just rules" width="100%"></p>
 
 <div align="center">
   <a href="https://huggingface.co/spaces/HuggingFaceSwarms/PyBot" target="_blank">
