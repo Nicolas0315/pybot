@@ -9,7 +9,7 @@ while [ ! -f $ROOT/STOP ]; do
     [ -f $LOGS/score_$t.done ] && continue
     rm -rf $ROOT/wt/$t; git -C $REPO worktree prune; git -C $REPO worktree add -q -f $ROOT/wt/$t $t 2>>$LOGS/watch.err || continue
     for s in dev heldout; do
-      uv run --no-project python $REPO/play/score.py --bot $ROOT/wt/$t --set $REPO/play/$s.json --out $LOGS/$t.$s.json > $LOGS/$t.$s.summary.json 2>>$LOGS/watch.err
+      $ROOT/.venv/bin/python $REPO/play/score.py --bot $ROOT/wt/$t --set $REPO/play/$s.json --out $LOGS/$t.$s.json > $LOGS/$t.$s.summary.json 2>>$LOGS/watch.err
     done
     git -C $REPO rev-parse $t > $LOGS/score_$t.done
     echo "$(date '+%F %T') scored $t" >> $LOGS/watch.log
