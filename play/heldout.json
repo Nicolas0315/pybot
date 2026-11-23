@@ -1,0 +1,368 @@
+[
+ {
+  "id": "held001",
+  "cat": "greeting",
+  "turns": [
+   "こんにちは！"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held002",
+  "cat": "greeting",
+  "turns": [
+   "おはようございます"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held003",
+  "cat": "greeting",
+  "turns": [
+   "ハロー"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held004",
+  "cat": "greeting",
+  "turns": [
+   "こんちは"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held005",
+  "cat": "thanks",
+  "turns": [
+   "どうもありがとう"
+  ],
+  "expect": [
+   "どういたしまして|いえいえ|よかった|お役に"
+  ]
+ },
+ {
+  "id": "held006",
+  "cat": "thanks",
+  "turns": [
+   "感謝します"
+  ],
+  "expect": [
+   "どういたしまして|いえいえ|よかった|お役に"
+  ]
+ },
+ {
+  "id": "held007",
+  "cat": "bye",
+  "turns": [
+   "じゃあね"
+  ],
+  "expect": [
+   "さようなら|また|おやすみ|ばいばい|バイバイ|お疲れ"
+  ]
+ },
+ {
+  "id": "held008",
+  "cat": "bye",
+  "turns": [
+   "お先に失礼します"
+  ],
+  "expect": [
+   "さようなら|また|おやすみ|ばいばい|バイバイ|お疲れ"
+  ]
+ },
+ {
+  "id": "held009",
+  "cat": "name_memory",
+  "turns": [
+   "私はサトシです",
+   "私の名前を言って"
+  ],
+  "expect": [
+   "サトシ"
+  ]
+ },
+ {
+  "id": "held010",
+  "cat": "name_memory",
+  "turns": [
+   "名前は美咲です",
+   "私は誰でしょう？"
+  ],
+  "expect": [
+   "美咲"
+  ]
+ },
+ {
+  "id": "held011",
+  "cat": "fact",
+  "turns": [
+   "アメリカの首都は？"
+  ],
+  "expect": [
+   "ワシントン"
+  ]
+ },
+ {
+  "id": "held012",
+  "cat": "fact",
+  "turns": [
+   "1時間は何分？"
+  ],
+  "expect": [
+   "60|六十"
+  ]
+ },
+ {
+  "id": "held013",
+  "cat": "fact",
+  "turns": [
+   "光の速さは？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held014",
+  "cat": "fact",
+  "turns": [
+   "日本で一番高い山は？"
+  ],
+  "expect": [
+   "富士"
+  ]
+ },
+ {
+  "id": "held015",
+  "cat": "fact",
+  "turns": [
+   "人間の骨は何本？"
+  ],
+  "expect": [
+   "206|200"
+  ]
+ },
+ {
+  "id": "held016",
+  "cat": "cooking_home",
+  "turns": [
+   "パスタの茹で時間は？"
+  ],
+  "expect": [
+   "分"
+  ]
+ },
+ {
+  "id": "held017",
+  "cat": "cooking_home",
+  "turns": [
+   "カレーライスの作り方を教えて"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held018",
+  "cat": "cooking_home",
+  "turns": [
+   "炊飯器のお米が固い"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held019",
+  "cat": "cooking_home",
+  "turns": [
+   "お風呂のカビを取るには？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held020",
+  "cat": "health",
+  "turns": [
+   "熱があります"
+  ],
+  "expect": [
+   "休|水分|医師|病院|冷"
+  ]
+ },
+ {
+  "id": "held021",
+  "cat": "health",
+  "turns": [
+   "のどが痛い"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held022",
+  "cat": "health",
+  "turns": [
+   "運動不足を解消したい"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held023",
+  "cat": "travel",
+  "turns": [
+   "北海道に行くなら何月がいい？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held024",
+  "cat": "travel",
+  "turns": [
+   "パスポートの取り方は？"
+  ],
+  "expect": [
+   "申請|パスポート"
+  ]
+ },
+ {
+  "id": "held025",
+  "cat": "travel",
+  "turns": [
+   "沖縄のおすすめは？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held026",
+  "cat": "emotion",
+  "turns": [
+   "ちょっと悲しい"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held027",
+  "cat": "emotion",
+  "turns": [
+   "今日は楽しかった！"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held028",
+  "cat": "emotion",
+  "turns": [
+   "眠いなあ"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held029",
+  "cat": "math",
+  "turns": [
+   "7たす8は？"
+  ],
+  "expect": [
+   "15|十五"
+  ]
+ },
+ {
+  "id": "held030",
+  "cat": "math",
+  "turns": [
+   "100わる4は？"
+  ],
+  "expect": [
+   "25|二十五"
+  ]
+ },
+ {
+  "id": "held031",
+  "cat": "self",
+  "turns": [
+   "君の名前は？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held032",
+  "cat": "self",
+  "turns": [
+   "自己紹介して"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held033",
+  "cat": "self",
+  "turns": [
+   "人間ですか？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held034",
+  "cat": "advice_misc",
+  "turns": [
+   "引っ越しの準備を教えて"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held035",
+  "cat": "advice_misc",
+  "turns": [
+   "おすすめの本は？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held036",
+  "cat": "advice_misc",
+  "turns": [
+   "明日の予定が不安"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held037",
+  "cat": "advice_misc",
+  "turns": [
+   "ダイエットのコツは？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held038",
+  "cat": "advice_misc",
+  "turns": [
+   "ペットと旅行したい"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held039",
+  "cat": "multi_turn",
+  "turns": [
+   "犬を飼っています",
+   "名前はポチです",
+   "うちの犬の名前は？"
+  ],
+  "expect": [
+   "ポチ"
+  ]
+ },
+ {
+  "id": "held040",
+  "cat": "multi_turn",
+  "turns": [
+   "カレーを作りたい",
+   "何が必要？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "held041",
+  "cat": "multi_turn",
+  "turns": [
+   "大阪に行きます",
+   "何が有名？"
+  ],
+  "expect": []
+ }
+]

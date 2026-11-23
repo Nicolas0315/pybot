@@ -1,0 +1,471 @@
+[
+ {
+  "id": "dev001",
+  "cat": "greeting",
+  "turns": [
+   "こんにちは"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev002",
+  "cat": "greeting",
+  "turns": [
+   "おはよう"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev003",
+  "cat": "greeting",
+  "turns": [
+   "こんばんは"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev004",
+  "cat": "greeting",
+  "turns": [
+   "やあ"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev005",
+  "cat": "greeting",
+  "turns": [
+   "はじめまして"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev006",
+  "cat": "thanks",
+  "turns": [
+   "ありがとう"
+  ],
+  "expect": [
+   "どういたしまして|いえいえ|よかった|お役に"
+  ]
+ },
+ {
+  "id": "dev007",
+  "cat": "thanks",
+  "turns": [
+   "助かりました、ありがとうございます"
+  ],
+  "expect": [
+   "どういたしまして|いえいえ|よかった|お役に"
+  ]
+ },
+ {
+  "id": "dev008",
+  "cat": "bye",
+  "turns": [
+   "さようなら"
+  ],
+  "expect": [
+   "さようなら|また|おやすみ|ばいばい|バイバイ"
+  ]
+ },
+ {
+  "id": "dev009",
+  "cat": "bye",
+  "turns": [
+   "またね"
+  ],
+  "expect": [
+   "さようなら|また|おやすみ|ばいばい|バイバイ"
+  ]
+ },
+ {
+  "id": "dev010",
+  "cat": "bye",
+  "turns": [
+   "おやすみなさい"
+  ],
+  "expect": [
+   "さようなら|また|おやすみ|ばいばい|バイバイ"
+  ]
+ },
+ {
+  "id": "dev011",
+  "cat": "name_memory",
+  "turns": [
+   "私の名前はタロウです",
+   "私の名前は何ですか？"
+  ],
+  "expect": [
+   "タロウ"
+  ]
+ },
+ {
+  "id": "dev012",
+  "cat": "name_memory",
+  "turns": [
+   "僕はハナコといいます",
+   "僕の名前を覚えてる？"
+  ],
+  "expect": [
+   "ハナコ"
+  ]
+ },
+ {
+  "id": "dev013",
+  "cat": "name_memory",
+  "turns": [
+   "わたしは健太です。",
+   "わたしの名前は？"
+  ],
+  "expect": [
+   "健太"
+  ]
+ },
+ {
+  "id": "dev014",
+  "cat": "fact",
+  "turns": [
+   "日本の首都はどこですか？"
+  ],
+  "expect": [
+   "東京"
+  ]
+ },
+ {
+  "id": "dev015",
+  "cat": "fact",
+  "turns": [
+   "富士山の高さは？"
+  ],
+  "expect": [
+   "3776|3,776"
+  ]
+ },
+ {
+  "id": "dev016",
+  "cat": "fact",
+  "turns": [
+   "水は何度で沸騰しますか？"
+  ],
+  "expect": [
+   "100"
+  ]
+ },
+ {
+  "id": "dev017",
+  "cat": "fact",
+  "turns": [
+   "一年は何日ありますか？"
+  ],
+  "expect": [
+   "365"
+  ]
+ },
+ {
+  "id": "dev018",
+  "cat": "fact",
+  "turns": [
+   "地球で一番大きい海は？"
+  ],
+  "expect": [
+   "太平洋"
+  ]
+ },
+ {
+  "id": "dev019",
+  "cat": "fact",
+  "turns": [
+   "1週間は何日？"
+  ],
+  "expect": [
+   "7|七"
+  ]
+ },
+ {
+  "id": "dev020",
+  "cat": "cooking_home",
+  "turns": [
+   "ゆで卵は何分茹でればいいですか？"
+  ],
+  "expect": [
+   "分"
+  ]
+ },
+ {
+  "id": "dev021",
+  "cat": "cooking_home",
+  "turns": [
+   "お米の炊き方を教えて"
+  ],
+  "expect": [
+   "水|研"
+  ]
+ },
+ {
+  "id": "dev022",
+  "cat": "cooking_home",
+  "turns": [
+   "やかんの水垢を取るには？"
+  ],
+  "expect": [
+   "酢|クエン酸"
+  ]
+ },
+ {
+  "id": "dev023",
+  "cat": "cooking_home",
+  "turns": [
+   "カレーを美味しく作るコツは？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev024",
+  "cat": "cooking_home",
+  "turns": [
+   "味噌汁の作り方は？"
+  ],
+  "expect": [
+   "だし|味噌"
+  ]
+ },
+ {
+  "id": "dev025",
+  "cat": "health",
+  "turns": [
+   "風邪をひいたかも、どうしたらいい？"
+  ],
+  "expect": [
+   "休|水分|睡眠"
+  ]
+ },
+ {
+  "id": "dev026",
+  "cat": "health",
+  "turns": [
+   "頭が痛いです"
+  ],
+  "expect": [
+   "休|水分|医師|病院"
+  ]
+ },
+ {
+  "id": "dev027",
+  "cat": "health",
+  "turns": [
+   "眠れないときはどうすれば？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev028",
+  "cat": "health",
+  "turns": [
+   "肩こりを治したい"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev029",
+  "cat": "travel",
+  "turns": [
+   "京都でおすすめの観光地は？"
+  ],
+  "expect": [
+   "清水|金閣|伏見|嵐山"
+  ]
+ },
+ {
+  "id": "dev030",
+  "cat": "travel",
+  "turns": [
+   "海外旅行に持っていくものは？"
+  ],
+  "expect": [
+   "パスポート"
+  ]
+ },
+ {
+  "id": "dev031",
+  "cat": "travel",
+  "turns": [
+   "東京から大阪までどのくらいかかる？"
+  ],
+  "expect": [
+   "時間|分"
+  ]
+ },
+ {
+  "id": "dev032",
+  "cat": "emotion",
+  "turns": [
+   "今日は疲れた"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev033",
+  "cat": "emotion",
+  "turns": [
+   "最近ちょっと寂しいんだ"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev034",
+  "cat": "emotion",
+  "turns": [
+   "仕事がうまくいかなくて落ち込んでる"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev035",
+  "cat": "emotion",
+  "turns": [
+   "嬉しいことがあったよ"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev036",
+  "cat": "math",
+  "turns": [
+   "3たす5は？"
+  ],
+  "expect": [
+   "8|八"
+  ]
+ },
+ {
+  "id": "dev037",
+  "cat": "math",
+  "turns": [
+   "10の2乗はいくつ？"
+  ],
+  "expect": [
+   "100|百"
+  ]
+ },
+ {
+  "id": "dev038",
+  "cat": "math",
+  "turns": [
+   "12かける12は？"
+  ],
+  "expect": [
+   "144"
+  ]
+ },
+ {
+  "id": "dev039",
+  "cat": "self",
+  "turns": [
+   "あなたは誰ですか？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev040",
+  "cat": "self",
+  "turns": [
+   "あなたは何ができるの？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev041",
+  "cat": "self",
+  "turns": [
+   "あなたはAIですか？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev042",
+  "cat": "self",
+  "turns": [
+   "好きな食べ物は何？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev043",
+  "cat": "advice_misc",
+  "turns": [
+   "犬を飼いたいんだけど、何を準備すればいい？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev044",
+  "cat": "advice_misc",
+  "turns": [
+   "猫がご飯を食べない"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev045",
+  "cat": "advice_misc",
+  "turns": [
+   "お金を貯めるコツは？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev046",
+  "cat": "advice_misc",
+  "turns": [
+   "転職すべきか悩んでいます"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev047",
+  "cat": "advice_misc",
+  "turns": [
+   "おすすめの映画を教えて"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev048",
+  "cat": "advice_misc",
+  "turns": [
+   "今日の天気は？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev049",
+  "cat": "multi_turn",
+  "turns": [
+   "ゆで卵の作り方を教えて",
+   "それは何分かかる？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev050",
+  "cat": "multi_turn",
+  "turns": [
+   "京都に行きたい",
+   "いつ行くのがいい？"
+  ],
+  "expect": []
+ },
+ {
+  "id": "dev051",
+  "cat": "multi_turn",
+  "turns": [
+   "猫を飼っています",
+   "名前はミケです",
+   "私の猫の名前は？"
+  ],
+  "expect": [
+   "ミケ"
+  ]
+ }
+]
