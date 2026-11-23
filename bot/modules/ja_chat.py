@@ -332,6 +332,12 @@ def _entity_in(t, table):
 
 def h_fact(t, mem):
     st = _state(mem)
+    m = re.search(r"(東京|大阪|京都|横浜|名古屋|札幌|福岡|神戸|仙台|広島|沖縄|北海道)(都|府|県|市)?の人口", t)
+    if m:
+        pop = {"東京": "約1400万人（東京都）", "大阪": "約275万人（大阪市）", "京都": "約140万人（京都市）", "横浜": "約375万人",
+               "名古屋": "約230万人", "札幌": "約197万人", "福岡": "約163万人", "神戸": "約150万人", "仙台": "約110万人",
+               "広島": "約120万人", "沖縄": "約145万人", "北海道": "約510万人"}
+        return "{}の人口は、{}です（おおよその数字です）。".format(m.group(1), pop[m.group(1)])
     tt = to_arabic(t) if re.search(r"[0-9]", t) is None and False else t
     # capitals
     if re.search(r"首都|県庁|州都", t):
@@ -365,7 +371,90 @@ def h_datetime(t, mem):
         return "いまは{}時{}分ごろです。".format(now.hour, now.minute)
 
 
-HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_math, h_fact, h_datetime, h_greeting, h_fallback]
+# ---- R4: advice (cooking / home / health / travel) -------------------------------------------
+from ..knowledge import ja_advice as A
+
+_PLACES = ["東京", "大阪", "京都", "名古屋", "新大阪", "博多", "福岡", "広島", "仙台", "札幌", "函館", "金沢", "新潟", "長野", "沖縄", "那覇",
+           "横浜", "鎌倉", "箱根", "日光", "奈良", "神戸"]
+_TRAVELISH = r"旅行|観光|旅|行き|行く|行って|行こう|スポット|見どころ|見所|名所|おすすめ|オススメ|お勧め|遊び|デート|何がある|見る|食べ|ツアー|泊"
+_HEALTH_ASK = r"どうしたら|どうすれば|どうすれ|治したい|治す|治る|対処|対策|予防|改善|楽になる|いい(ですか|かな|？|\?)|効く|痛い|つらい|辛い"
+
+
+def h_transit(t, mem):
+    if not re.search(r"かか(る|ります)|所要|何時間|何分|どのくらい|どれくらい|どれぐらい|距離|遠い|時間", t):
+        return None
+    hits = []
+    for p in _PLACES:
+        i = t.find(p)
+        if i >= 0:
+            hits.append((i, p))
+    hits.sort()
+    names = []
+    for _, p in hits:
+        if p not in names:
+            names.append(p)
+    if len(names) >= 2:
+        for a in names:
+            for b in names:
+                if a != b and frozenset((a, b)) in A.TRANSIT:
+                    st = _state(mem)
+                    st["topic"] = "transit"
+                    return "{}から{}までは、{}".format(names[0], names[1], A.TRANSIT[frozenset((a, b))])
+        return "{}から{}までの正確な時間は分かりませんが、新幹線や飛行機を使うのが一般的です。乗換案内アプリで調べると確実です。".format(names[0], names[1])
+
+
+def _set_topic(mem, tid, kind):
+    st = _state(mem)
+    st["topic"] = tid
+    st["topic_kind"] = kind
+
+
+def _first(table, t):
+    for tid, pat, reply in table:
+        if re.search(pat, t):
+            return tid, reply
+    return None
+
+
+def h_advice(t, mem):
+    for kind, table in (("cooking", A.COOKING), ("home", A.HOME)):
+        hit = _first(table, t)
+        if hit:
+            _set_topic(mem, hit[0], kind)
+            return hit[1]
+    hit = _first(A.HEALTH, t)
+    if hit:
+        _set_topic(mem, hit[0], "health")
+        return hit[1]
+    return None
+
+
+_OVERSEAS = r"海外|外国|ハワイ|ソウル|韓国|台湾|タイ|バンコク|パリ|ロンドン|ニューヨーク|ヨーロッパ|アメリカ|シンガポール|ベトナム|中国|フランス|イタリア|ドイツ|スペイン|イギリス|オーストラリア|カナダ|グアム|バリ"
+
+
+def h_travel(t, mem):
+    if re.search(r"持っ(て|ていく)|持ち物|荷物|準備|必要なもの", t) and re.search(r"旅|行(く|き)|観光|キャンプ|出張", t):
+        key = "pack_overseas" if re.search(_OVERSEAS, t) else "pack_domestic"
+        for tid, pat, reply in A.TRAVEL_MISC:
+            if tid == key:
+                _set_topic(mem, tid, "travel")
+                return reply
+    hit = _first(A.TRAVEL_MISC[:2], t)
+    if hit:
+        _set_topic(mem, hit[0], "travel")
+        return hit[1]
+    for tid, pat, reply in A.DESTINATIONS:
+        if re.search(pat, t) and (re.search(_TRAVELISH, t) or tid in ("hakone",)):
+            _set_topic(mem, tid, "travel")
+            return reply
+    hit = _first(A.TRAVEL_MISC[2:], t)
+    if hit:
+        _set_topic(mem, hit[0], "travel")
+        return hit[1]
+
+
+HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_math, h_transit, h_fact, h_datetime,
+            h_travel, h_advice, h_greeting, h_fallback]
 
 
 def observe(text, memory):
