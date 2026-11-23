@@ -201,12 +201,28 @@ LABEL_KEYS = ("id", "label", "topic", "name", "text")
 READ = {}
 
 
+_JA_RE = __import__("re").compile(r"[\u3040-\u30ff\u4e00-\u9fff]")
+
+
+def _japanese_pick(text, candidates):
+    """Input containing kana/kanji belongs to the Japanese module (bot/modules/ja_chat.py)."""
+    if not isinstance(text, str) or not _JA_RE.search(text):
+        return None
+    for i, c in enumerate(candidates):
+        if c.get("module") == "ja_chat":
+            return i
+    return None
+
+
 def choose(text, memory, candidates):
     """Return the index of the chosen candidate.
 
     candidates: [{"module": name, "priority": PRIORITY, "reply": text}], highest PRIORITY
     first. memory["turns"] holds the earlier turns of the conversation.
     """
+    ja = _japanese_pick(text, candidates)
+    if ja is not None:
+        return ja
     try:
         index = _choose(text, memory, candidates)
     except Exception:  # noqa: BLE001 - the arbiter must never lose a turn
