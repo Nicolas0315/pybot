@@ -183,6 +183,16 @@ def h_fact_tell(t, mem):
         if v:
             facts[k] = v
             return _pick(D.FACT_ACK, mem).format(x="{}は{}".format(k, v))
+    m = re.search(r"^(?:" + _ME + r")の(" + D.PETS + r")は\s*" + _VAL + r"(?:" + _END + r")?[。.!！\s]*$", t)
+    if m and not re.search(r"(何|どう|どこ)", t):
+        kind, nm = m.group(1), _clean_value(m.group(2))
+        facts[kind + "の名前"] = nm
+        st["subject"] = kind
+        return "{}の名前は{}なんですね。覚えました！".format(kind, nm)
+    m = re.search(r"^(" + _VAL + r")という名前(?:です|だ|だよ)", t)
+    if m and st.get("subject"):
+        facts[st["subject"] + "の名前"] = m.group(2).strip()
+        return "{}の名前は{}なんですね。覚えました！".format(st["subject"], m.group(2).strip())
     # N の名前は V (「猫の名前はミケです」)
     m = re.search(r"^(?:" + _ME + r"の)?(" + D.PETS + r"|友達|友だち|家族|彼女|彼氏|子供|息子|娘|兄|姉|弟|妹|母|父)の名前は\s*" + _VAL + r"(?:" + _END + r")?[。.!！\s]*$", t)
     if m:
@@ -198,7 +208,7 @@ def h_fact_tell(t, mem):
     if m:
         facts["住所"] = m.group(1)
         return "{}にお住まいなんですね。いいところですか？".format(m.group(1))
-    m = re.search(_ME + r"?は([^\s、。]{1,10}?)が(?:大)?好き(?:です|だ|なんです|なの|だよ|$|[。!！])", t)
+    m = re.search(r"^(?:(?:" + _ME + r")は)?([^\s、。は]{1,10}?)が(?:大)?好き(?:です|だ|なんです|なの|だよ|$|[。!！])", t)
     if m:
         likes = st.setdefault("likes", [])
         if m.group(1) not in likes:
@@ -343,7 +353,7 @@ def h_fact(t, mem):
                 return "{}の県庁所在地は{}です。".format(_pref(k), D.PREF_CAPITALS[k])
         k = _entity_in(t, D.CAPITALS)
         if k:
-            st["topic"] = "capital"
+            _set_topic(mem, "capital", "fact")
             return "{}の首都は{}です。".format(k, D.CAPITALS[k])
     m = re.search(r"(北海道|[^\s、。]{1,3}[県府都]|[^\s、。]{1,3})の県庁所在地|県庁所在地は", t)
     if m:
@@ -403,6 +413,7 @@ def _set_topic(mem, tid, kind):
     st = _state(mem)
     st["topic"] = tid
     st["topic_kind"] = kind
+    st["topic_turn"] = len(mem.get("turns") or [])
 
 
 def _first(table, t):
@@ -519,9 +530,98 @@ def h_fallback(t, mem):
         return "「{}」のことなんですね。もう少し詳しく聞かせてもらえますか？".format(e)
     return _pick(D.FALLBACK_REPLIES, mem)
 
+# ---- R6: follow-ups, recap, repeat, chained math ---------------------------------------------------------
+_FOLLOW_START = r"^(それ|その|これ|この|あれ|あの|じゃあ|じゃ|では|あと|ほかに|他に|もっと|ちなみに|それで|それなら|で、|でも|それって|なんで|どうして|どのくらい|いつ|どこ|いくら|大丈夫|他には|ほかには|もう少し|詳しく|具体的に)"
 
-HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_self, h_math, h_transit, h_fact, h_datetime,
-            h_travel, h_advice, h_misc, h_emotion, h_greeting, h_smalltalk, h_fallback]
+
+def _label(st):
+    return D_LABELS.get(st.get("topic"), "") or {"cooking": "料理の話", "home": "お掃除の話", "health": "体調の話", "travel": "旅行の話",
+                                                  "emotion": "あなたの気持ちの話", "misc": "さっきの話", "self": "私のこと"}.get(st.get("topic_kind"), "")
+
+
+D_LABELS = A.TOPIC_LABELS
+
+
+def _fresh(st, mem, window=3):
+    return st.get("topic") and len(mem.get("turns") or []) - st.get("topic_turn", -99) <= window
+
+
+def _followup(t, mem, loose):
+    st = _state(mem)
+    turns = mem.get("turns") or []
+    # repeat
+    if re.search(r"もう(一度|一回|いっかい|1回)(言って|お願い|教えて)|もう一回|もういちど|聞こえなかった|繰り返して|くりかえして", t) and turns:
+        return "もう一度お伝えしますね。" + turns[-1]["bot"]
+    # what were we talking about
+    if re.search(r"(何|なに)の話|さっきの話|何を話して|何について話|今まで(の|何)|話(を)?(戻|もど)|前の話", t):
+        lab = _label(st)
+        if lab:
+            return "さっきは「{}」のお話をしていましたね。続きをお話ししましょうか？".format(lab) if not lab.endswith("話") else "さっきは{}をしていましたね。続きをお話ししましょうか？".format(lab)
+        return "まだ、特にお話ししたことはありませんね。何でも気軽に話しかけてくださいね。"
+    # chained arithmetic on the previous result
+    if "last_num" in st and re.search(r"^(それ|答え|その数)", t) or (re.search(r"それに|その数に|答えに", t) and "last_num" in st):
+        from fractions import Fraction
+        tt = to_arabic(t)
+        m = re.search(_N, tt)
+        if m:
+            b = Fraction(m.group(1))
+            a = Fraction(st["last_num"])
+            for pat, fn, label in _OPS:
+                if re.search(pat, tt[m.end():]) or re.search(pat, tt[:m.start()]):
+                    if "割" in label and b == 0:
+                        return "0で割ることはできません。"
+                    if label.startswith("{a}引く") and re.search(r"から", tt[:m.start()]):
+                        r = b - a
+                    else:
+                        r = fn(a, b)
+                    st["last_num"] = r
+                    return "答えは{}です。".format(_fmt(r))
+    if not _fresh(st, mem):
+        return None
+    starts = bool(re.search(_FOLLOW_START, t))
+    if loose and (starts or len(t) > 16):
+        return None
+    if not loose and not starts:
+        return None
+    for intent, pat in A.FOLLOW_INTENTS:
+        if re.search(pat, t):
+            subs = A.SUBS.get(st["topic"], {})
+            r = subs.get(intent) or A.KIND_SUBS.get(st.get("topic_kind"), {}).get(intent)
+            if r:
+                st["topic_turn"] = len(turns)
+                return r
+            lab = _label(st)
+            if lab:
+                return "「{}」についての詳しいことは、まだ十分に分かりません。もう少し具体的に教えてもらえますか？".format(lab.replace("の話", ""))
+    if loose and st.get("topic_kind") == "emotion" and len(t) <= 40 and not re.search(D.THANKS, t):
+        return "話してくれてありがとうございます。そう感じるのは自然なことですよ。もう少し聞かせてもらえますか？無理のない範囲で大丈夫です。"
+    return None
+
+
+def h_followup(t, mem):
+    return _followup(t, mem, False)
+
+
+def h_followup_loose(t, mem):
+    return _followup(t, mem, True)
+
+
+def h_math_state(t, mem):
+    r = h_math(t, mem)
+    if r:
+        st = _state(mem)
+        m = re.search(r"は(-?[\d,\.]+)(?:です|%)", r) or re.search(r"は約(-?[\d\.]+)です", r)
+        if m:
+            try:
+                st["last_num"] = float(m.group(1).replace(",", "")) if "." in m.group(1) else int(m.group(1).replace(",", ""))
+            except ValueError:
+                pass
+        _set_topic(mem, "math", "fact")
+    return r
+
+
+HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_followup, h_self, h_math_state, h_transit, h_fact, h_datetime,
+            h_travel, h_advice, h_misc, h_followup_loose, h_emotion, h_greeting, h_smalltalk, h_fallback]
 
 
 def observe(text, memory):
