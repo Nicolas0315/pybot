@@ -54,10 +54,6 @@ def h_greeting(t, mem):
             return _pick(outs, mem)
 
 
-def h_fallback(t, mem):
-    return _pick(D.FALLBACK_REPLIES, mem)
-
-
 # ---- R2: names and personal facts ----------------------------------------------------------
 _END = r"(?:です|でございます|といいます|と言います|と申します|っていいます|って言います|と呼んでください|と呼んで|だよ|だ|といいます)"
 _VAL = r"([^\s、。,.!?？！]{1,14}?)"
@@ -202,7 +198,7 @@ def h_fact_tell(t, mem):
     if m:
         facts["住所"] = m.group(1)
         return "{}にお住まいなんですね。いいところですか？".format(m.group(1))
-    m = re.search(_ME + r"?は([^\s、。]{1,10}?)が(?:大)?好き(?:です|だ|なんです|なの|だよ)", t)
+    m = re.search(_ME + r"?は([^\s、。]{1,10}?)が(?:大)?好き(?:です|だ|なんです|なの|だよ|$|[。!！])", t)
     if m:
         likes = st.setdefault("likes", [])
         if m.group(1) not in likes:
@@ -453,8 +449,79 @@ def h_travel(t, mem):
         return hit[1]
 
 
-HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_math, h_transit, h_fact, h_datetime,
-            h_travel, h_advice, h_greeting, h_fallback]
+# ---- R5: self, emotion, small talk, graceful fallback -------------------------------------------
+_CAUSES = [(r"仕事|会社|上司|職場|残業|バイト", "お仕事のことなんですね。"), (r"学校|勉強|テスト|試験|受験|宿題", "学校や勉強のことなんですね。"),
+           (r"友達|友だち|人間関係|喧嘩|けんか", "人間関係のことなんですね。"), (r"家族|親|母|父|夫|妻|子供", "ご家族のことなんですね。"),
+           (r"彼氏|彼女|恋|失恋", "恋愛のことなんですね。")]
+
+
+def h_self(t, mem):
+    for pat, reply in A.SELF:
+        if re.search(pat, t, re.I):
+            _set_topic(mem, "self", "self")
+            return reply
+
+
+def h_emotion(t, mem):
+    if re.search(r"(何|どう|どうし|なぜ|どうして).*(ですか|[?？])$", t) and not re.search(r"嬉し|楽し", t):
+        return None
+    for tid, pat, replies in A.EMOTIONS:
+        if re.search(pat, t):
+            r = replies[len(mem.get("turns") or []) % len(replies)]
+            if tid in ("down", "tired", "angry", "anxious", "sad", "lonely"):
+                for cp, cr in _CAUSES:
+                    if re.search(cp, t):
+                        r = cr + r
+                        break
+            _set_topic(mem, "emotion_" + tid, "emotion")
+            return r
+
+
+def h_misc(t, mem):
+    hit = _first(A.MISC, t)
+    if hit:
+        _set_topic(mem, hit[0], "misc")
+        return hit[1]
+
+
+def h_smalltalk(t, mem):
+    if re.search(r"^(はい|うん|ええ|そう(だね|ですね|なんだ|か)?|なるほど|へえ|へー|ふーん|そっか|なるほどね|了解|りょうかい|オッケー|OK|いいね|いいですね)[。!！\s]*$", t):
+        return "そうなんですね。他にも聞きたいことや、お話ししたいことがあれば、何でも言ってくださいね。"
+    if re.search(r"^(ごめん|ごめんね|すみません|すいません|申し訳)", t):
+        return "いえいえ、気にしないでください。大丈夫ですよ。"
+    if re.search(r"いい(天気|お天気)|天気がいい|晴れ(てる|ている|た)|雨(だ|ですね|が降って)|お出かけ", t):
+        return "そうですね、天気がいいとお出かけしたくなりますよね。今日は何か予定はありますか？"
+    if re.search(r"^(好き|大好き|すごい|えらい|賢い|かわいい|可愛い|面白い|おもしろい)(です|だね|ね|よ)?[。!！\s]*$|あなたはすごい|いい子|えらいね", t):
+        return "ありがとうございます、うれしいです！もっとお役に立てるように頑張りますね。"
+    if re.search(r"(つまり|どういう意味|意味が分から|わからない|分からない)", t) and len(t) < 20:
+        return "分かりにくくてごめんなさい。どの部分が分かりにくかったか教えてもらえますか？別の言い方で説明しますね。"
+    if re.search(r"(何|なに)を(話|しゃべ)", t) or re.search(r"話(そう|しましょう|したい|を聞いて)|おしゃべり|雑談", t):
+        return "いいですね、お話ししましょう！今日あったことでも、好きなことでも、最近気になっていることでも、何でも聞かせてください。"
+    return None
+
+
+def _echo(t):
+    m = re.match(r"^([^、。!?！？\s]{2,10}?)(?:は|が|を|って|も|に|の)", t)
+    if not m or re.search(r"[たいくてだるう]$", m.group(1)):
+        return None
+    return m.group(1)
+
+
+def h_fallback(t, mem):
+    n = len(mem.get("turns") or [])
+    q = re.search(r"[?？]$|ですか|ますか|でしょうか|かな$|教えて|どう(すれば|したら|やって)|何|なに|どこ|いつ|だれ|誰|なぜ|どうして|どれ", t)
+    if q:
+        outs = ["ごめんなさい、それについては詳しく分かりません。調べものなら、信頼できるサイトや専門家に聞くのが確実です。もう少し詳しく教えてもらえれば、できる範囲でお答えします。",
+                "うまくお答えできなくてごめんなさい。別の言い方や、もう少し具体的な内容で聞いてもらえますか？"]
+        return outs[n % len(outs)]
+    e = _echo(t)
+    if e and n % 2 == 0:
+        return "「{}」のことなんですね。もう少し詳しく聞かせてもらえますか？".format(e)
+    return _pick(D.FALLBACK_REPLIES, mem)
+
+
+HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_self, h_math, h_transit, h_fact, h_datetime,
+            h_travel, h_advice, h_misc, h_emotion, h_greeting, h_smalltalk, h_fallback]
 
 
 def observe(text, memory):
