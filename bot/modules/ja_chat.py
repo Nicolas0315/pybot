@@ -214,7 +214,158 @@ def h_fact_tell(t, mem):
         return "{}のお仕事なんですね。大変なこともありますか？".format(m.group(1))
 
 
-HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_greeting, h_fallback]
+# ---- R3: arithmetic and facts ---------------------------------------------------------------
+_KD = D.NUM_WORDS
+_KU = {"十": 10, "百": 100, "千": 1000}
+_KB = {"万": 10000, "億": 100000000}
+_KANJI_RUN = re.compile(r"[零〇一二三四五六七八九十百千万億]+")
+
+
+def kansuji(s):
+    """Kanji numeral -> int (二十三, 百二十, 三万五千, 一二三). None when not a numeral."""
+    if not s:
+        return None
+    if all(c in _KD for c in s):
+        return int("".join(str(_KD[c]) for c in s))
+    total, block, cur = 0, 0, None
+    for c in s:
+        if c in _KD:
+            cur = _KD[c]
+        elif c in _KU:
+            block += (cur if cur is not None else 1) * _KU[c]
+            cur = None
+        elif c in _KB:
+            block += cur or 0
+            total += (block or 1) * _KB[c]
+            block, cur = 0, None
+        else:
+            return None
+    return total + block + (cur or 0)
+
+
+def to_arabic(t):
+    return _KANJI_RUN.sub(lambda m: str(kansuji(m.group(0))) if kansuji(m.group(0)) is not None else m.group(0), t)
+
+
+def _fmt(x):
+    from fractions import Fraction
+    x = Fraction(x).limit_denominator(10**6)
+    if x.denominator == 1:
+        return "{:,}".format(x.numerator) if abs(x.numerator) >= 10000 else str(x.numerator)
+    f = float(x)
+    return ("%.4f" % f).rstrip("0").rstrip(".")
+
+
+_N = r"(-?\d+(?:\.\d+)?)"
+_OPS = [
+    (r"(?:たす|足す|足して|プラス|\+|加えると|を足)", lambda a, b: a + b, "{a}たす{b}"),
+    (r"(?:ひく|引く|引いて|マイナス|-|－|を引)", lambda a, b: a - b, "{a}引く{b}"),
+    (r"(?:かける|掛ける|掛けて|かけて|×|\*|x|X|をかけ|を掛け)", lambda a, b: a * b, "{a}かける{b}"),
+    (r"(?:わる|割る|割って|÷|/|で割)", lambda a, b: a / b, "{a}割る{b}"),
+]
+
+
+def h_math(t, mem):
+    from fractions import Fraction
+    tt = to_arabic(t)
+    tt = re.sub(r"(\d),(\d{3})", r"\1\2", tt)
+    if not re.search(r"\d", tt):
+        return None
+    # power / root / percent / half / times first
+    m = re.search(_N + r"の" + _N + r"乗", tt)
+    if m:
+        a, b = Fraction(m.group(1)), Fraction(m.group(2))
+        if b.denominator == 1 and 0 <= b <= 64:
+            return "{}の{}乗は{}です。".format(m.group(1), m.group(2), _fmt(a ** int(b)))
+    m = re.search(_N + r"の(?:2乗|二乗)", tt) or re.search(_N + r"を(?:2乗|二乗)", tt)
+    m3 = re.search(_N + r"の(?:平方根|ルート)|(?:√|ルート)\s*" + _N, tt)
+    if m3:
+        import math
+        v = float(m3.group(1) or m3.group(2))
+        r = math.sqrt(v) if v >= 0 else None
+        if r is not None:
+            return "{}の平方根は{}です。".format(_fmt(Fraction(v)), _fmt(Fraction(r)) if r == int(r) else "約" + ("%.4f" % r).rstrip("0"))
+    m = re.search(_N + r"(?:円|個|人|kg|キロ|m|メートル|ページ|本|枚|台)?の\s*" + _N + r"\s*(?:%|パーセント|割)", tt)
+    if m:
+        a, p = Fraction(m.group(1)), Fraction(m.group(2))
+        pct = p * 10 if "割" in tt[m.end() - 2:m.end()] else p
+        return "{}の{}%は{}です。".format(m.group(1), _fmt(pct), _fmt(a * pct / 100))
+    m = re.search(_N + r"[^\d]{0,3}の(?:半分|半額)", tt)
+    if m:
+        return "{}の半分は{}です。".format(m.group(1), _fmt(Fraction(m.group(1)) / 2))
+    m = re.search(_N + r"[^\d]{0,3}の(\d+(?:\.\d+)?)倍", tt)
+    if m:
+        return "{}の{}倍は{}です。".format(m.group(1), m.group(2), _fmt(Fraction(m.group(1)) * Fraction(m.group(2))))
+    # unit conversion: "2時間は何分" / "5キロは何メートル"
+    m = re.search(_N + r"\s*([^\d\sはが]{1,8}?)(?:は|って|を)?(?:何|なに|いくつ)\s*([^\d\s？?です]{1,8}?)(?:ですか|です|になる|か|\?|？|$)", tt)
+    if m:
+        for fr, to, fac, fl, tl in D.UNIT_CONV:
+            if re.fullmatch(fr, m.group(2)) and re.fullmatch(to, m.group(3)):
+                return "{}{}は{}{}です。".format(m.group(1), fl, _fmt(Fraction(m.group(1)) * fac), tl)
+    # binary operators in natural or symbolic form
+    pure = not re.sub(r"[0-9.,+\-－×÷*/xX=＝?？!！。\s]|は|って|いくつ|答え|計算|です|か|の|を|いくら|何|なに|になる|は？", "", tt)
+    for pat, fn, label in _OPS:
+        m = re.search(_N + r"\s*(?:を)?" + pat + r"\s*" + _N, tt)
+        if m and not pure and re.fullmatch(r"[+\-－×÷*/xX]", m.group(0)[len(m.group(1)):-len(m.group(2))].strip() or "?"):
+            m = None
+        if m:
+            a, b = Fraction(m.group(1)), Fraction(m.group(2))
+            if label.endswith("割る{b}") and b == 0:
+                return "0で割ることはできません。"
+            r = fn(a, b)
+            if isinstance(r, Fraction) or True:
+                return "{}は{}です。".format(label.format(a=m.group(1), b=m.group(2)), _fmt(r))
+    return None
+
+
+def _pref(k):
+    return k if k == "北海道" else k + {"東京": "都", "京都": "府", "大阪": "府"}.get(k, "県")
+
+
+def _entity_in(t, table):
+    best = None
+    for k in table:
+        if k in t and (best is None or len(k) > len(best)):
+            best = k
+    return best
+
+
+def h_fact(t, mem):
+    st = _state(mem)
+    tt = to_arabic(t) if re.search(r"[0-9]", t) is None and False else t
+    # capitals
+    if re.search(r"首都|県庁|州都", t):
+        if re.search(r"県庁|府庁|道庁|都庁", t) or _entity_in(t, D.PREF_CAPITALS) and not _entity_in(t, D.CAPITALS):
+            k = _entity_in(t, D.PREF_CAPITALS)
+            if k and re.search(r"県庁所在地|県庁|都庁|府庁|道庁", t):
+                return "{}の県庁所在地は{}です。".format(_pref(k), D.PREF_CAPITALS[k])
+        k = _entity_in(t, D.CAPITALS)
+        if k:
+            st["topic"] = "capital"
+            return "{}の首都は{}です。".format(k, D.CAPITALS[k])
+    m = re.search(r"(北海道|[^\s、。]{1,3}[県府都]|[^\s、。]{1,3})の県庁所在地|県庁所在地は", t)
+    if m:
+        k = _entity_in(t, D.PREF_CAPITALS)
+        if k:
+            return "{}の県庁所在地は{}です。".format(k, D.PREF_CAPITALS[k])
+    for pat, ans in D.FACTS:
+        if re.search(pat, t):
+            return D.YEAR_ANSWER if ans == "ONEYEAR" else ans
+
+
+def h_datetime(t, mem):
+    import datetime
+    now = datetime.datetime.now()
+    wd = "月火水木金土日"[now.weekday()]
+    if re.search(r"今日.*(何日|なんにち|日付|何月|いつ)|今日の日付|今日は何日", t):
+        return "今日は{}年{}月{}日（{}曜日）です。".format(now.year, now.month, now.day, wd)
+    if re.search(r"今日.*(何曜日|なんようび)|何曜日", t):
+        return "今日は{}曜日です。".format(wd)
+    if re.search(r"(今|いま).*(何時|なんじ)|今何時|時刻", t):
+        return "いまは{}時{}分ごろです。".format(now.hour, now.minute)
+
+
+HANDLERS = [h_thanks, h_bye, h_name_ask, h_name_tell, h_fact_ask, h_fact_tell, h_math, h_fact, h_datetime, h_greeting, h_fallback]
 
 
 def observe(text, memory):
