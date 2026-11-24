@@ -20,10 +20,23 @@ import re
 from .lookup import (asks_the_kinds, entry, find,
                      says_it_has_gone_off as _says_it_has_gone_off)
 
-from .cooking import (DAIRY, DISHES, FOOD_CLASSES, MEAL_IDEAS, MEAL_PHRASES, PANTRY, PET_WORDS,
-                      _INGREDIENT_WORDS, _SWAP_ASK, _a_brew_not_a_dinner, _crowd, _table_text,
-                      _excluded, _fold, _mentions, _occasion, _sides, side_for, dish, ingredients,
-                      meal, missing, negated_ingredients, pointed, pointed_at_a_food, without)
+from ..knowledge_parts.cooking_part_02 import (
+    _occasion, side_for,
+)
+from ..knowledge_parts.cooking_part_04 import (
+    _a_brew_not_a_dinner,
+)
+from ..knowledge_parts.cooking_part_06 import (
+    FOOD_CLASSES, MEAL_PHRASES,
+)
+from ..knowledge_parts.cooking_part_07 import (
+    DAIRY, PET_WORDS, _INGREDIENT_WORDS, _SWAP_ASK, _crowd, _table_text, _excluded, _fold,
+    _mentions, _sides, dish, ingredients, meal, missing, negated_ingredients, pointed,
+    pointed_at_a_food, without,
+)
+from .cooking import (
+    DISHES, MEAL_IDEAS, PANTRY,
+)
 
 # The rows below are built against this list and put back into `cooking.ENTRIES` there.
 ENTRIES = []
