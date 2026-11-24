@@ -28,7 +28,7 @@ stands.
 """
 import re
 
-from .fallback_data import THE_PLACE_ASK, UNKNOWN, the_place_the_answer_is_kept
+from .fallback_data import UNKNOWN, the_place_the_answer_is_kept
 
 # The three lines in `fallback_data.UNKNOWN`: the plain pointer, with nothing of its own on it.
 # Other pools are hedges too - `a_place_nobody_can_see` opens "No first-hand knowledge of that one

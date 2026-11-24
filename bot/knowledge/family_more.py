@@ -14,7 +14,6 @@ name, which works because `family.py` only imports this module after every helpe
 already defined, and this module has no ENTRIES of its own for the registry to read as a domain.
 """
 
-import datetime
 import re
 
 from .lookup import entry

@@ -8,8 +8,8 @@ import re
 from ..compose import pick
 from ..memory import newborn, people
 from ..understanding import topics as reading
-from .lookup import (PRESENT_ASK, PRICE_COMPARED, a_food_is_being_kept, a_price_not_a_loan,
-                     about_them, asks_where, asks_where_a_shop_answers, entry)
+from .lookup import (PRICE_COMPARED, a_food_is_being_kept, a_price_not_a_loan, about_them,
+                     asks_where, asks_where_a_shop_answers, entry)
 
 # The topics this domain answers (bot/understanding/topics.py); answers.py declares the union.
 ANSWERS = ("shopping", "money", "technology")

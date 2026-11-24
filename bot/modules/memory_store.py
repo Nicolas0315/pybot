@@ -11,24 +11,17 @@ call"), the answer is one of the options the bot itself offered a turn ago, so t
 the bot's own last reply for them (bot/memory/choice.py).
 """
 import copy
-import datetime
 import random
 import re
 
 from ..compose import pick
-from ..compose.recall import with_a_tail
 from ..memory import (content, current, forget, forms, is_follow_up, keywords, last_bot,
                       last_module, last_user, log, name, note, others, plan_line, plan_sentence,
                       recent, remember, remember_answer, remember_other, resumed, return_target,
                       stem, thread, user, you)
 from ..memory import ack
-from ..memory.places import (A_QUESTION_ASKED, NOT_A_PLACE_VALUE, OTHER_PLACE, OTHER_PLACE_PRONOUN,
-                             PLACE_ENDS, _a_place, _a_town_moved, _asked_person, _other_place,
-                             _said_places, _the_place_alone)
 from ..memory import change as a_change
 from ..memory import cause as a_reason
-from ..memory.spoken import _spoken_as_numbers
-from ..memory import pending
 from ..memory import another as second_half
 from ..memory import choice as choose
 from ..memory import condition
@@ -36,11 +29,9 @@ from ..memory import decided
 from ..memory import company
 from ..memory import spent
 from ..memory import surname as family_name
-from ..memory.filler import without_filler, without_the_end_shrug
+from ..memory.filler import without_the_end_shrug
 from ..memory import guest
 from ..memory import plans
-from ..memory.named import carries_a_name
-from ..memory.taste import ASKS_ABOUT_A_TASTE, ASKS_FOR_TASTES, TASTE_ASKED_ABOUT
 from ..memory.taste import read_all as read_tastes
 from ..memory import facts as extract
 from ..knowledge import cooking
@@ -63,18 +54,13 @@ from ..memory import reject as turned_down
 from ..memory import repair as a_repair
 from ..memory import told as told_about
 from ..memory import whathurts as a_hurting_part
-from ..memory.when import (already_answer, asks_what_today_is, the_part_asked, until_answer,
-                             when_answer)
-from ..memory.topics import ACKS, GREET, STOPWORDS
+from ..memory.when import until_answer, when_answer
 from ..memory import topics as _topics
 from ..memory.repeat import HEDGE as _HEDGE
 from ..memory import repeat as repeat_the_line
 from ..memory.topics import subject as topic_subject
 from ..memory.thread import about as _about_the_chat
 from ..understanding import breeds, understand
-from ..understanding.normalize import fix_typo, normalise
-from ..understanding.kinds import the_manners_question
-from ..understanding.topics import PLACES
 
 
 from ..memory.store_lines import (  # the pools, moved out whole: see bot/memory/store_lines.py
@@ -224,77 +210,12 @@ from ..memory.store_lines import (  # the pools, moved out whole: see bot/memory
 from ..memory.enough import enough_reply
 # The reader's own tests call it through this module, and so does anything written against the
 # store before the move: the three names it reaches for are kept here, pointing at the one copy.
-from ..memory.enough import _amounts, _near_bare_range, _target
 _enough_reply = enough_reply
-from ..memory.relations import (ABOUT_PERSON_ASK, AGE_ADVERB, AGE_AGAIN, AGE_ASK,
-                          AGE_AS_A_CAUSE, AGE_COPULA, AGE_DETERMINER, AGE_PERSON_WORD,
-                          AGE_RULE_WORD, AGE_SAID, AGE_WORD, AGE_YOU_SAY, ANOTHER_PERSON,
-                          BREED_ASK, CHAT_TAIL, CHILD_WORD, GROUP_ASK, GROUP_NAMES_TYPED,
-                          GROUP_NAME_ASK, GROUP_WORDS, HAVE_ANY, NAME_AGAIN, PERSON_AFTER,
-                          PET_ASK, PLURAL_ANIMAL, THEIR_AGE, THEIR_JOB, THEIR_NAME,
-                          THEIR_TASTE_A_YES_NO, THEIR_TASTE_INTO, THEIR_TASTE_WHAT,
-                          THEY_ARE_NAMED, THE_KIDS, _PET_WORD, _PLURAL, _a, _a_kept_person,
-                          _a_list_of_names, _a_list_of_words, _a_or_any,
-                          _a_person_in_the_store, _a_pet_age, _a_plural_list,
-                          _a_word_the_store_knows, _age_is_about_a_person, _ages_reply,
-                          _ages_sentence, _animal_family, _ask_gender, _called,
-                          _canon_relation, _continues_an_about_ask, _did_you_mean,
-                          _every_line, _folded, _gender_of, _in_the_group,
-                          _just_gave_an_age, _kin_forms, _mentioned_the_group,
-                          _more_than_one, _more_than_one_word, _named_person,
-                          _newest_first, _one_age, _person_from_pronoun, _pet_age_reply,
-                          _pet_ages, _pet_ages_sentence, _pet_named, _plural_person,
-                          _pronoun_fits, _pronoun_for, _relation_reply, _relations_of,
-                          _same_as_last, _same_name, _same_name_however_they_wrote_it,
-                          _same_thing, _the_group_names_typed, _the_group_was_said,
-                          _the_group_word, _the_names_a_pronoun_gave,
-                          _the_names_of_the_group, _the_names_they_typed, _their_job,
-                          _their_taste, _they_like_sentence, _tidy_name,
-                          _whether_they_have, _with_article)
+from ..memory.relations import (_PET_WORD, _animal_family, _canon_relation, _folded, _named_person,
+                                _person_from_pronoun, _pronoun_fits)
 
-from .memory_tables import (
-    ASK_WITHOUT_MY,
-    CALENDAR_SAID,
-    COUNT_ANIMAL,
-    COUNT_BARE,
-    DAY_ASKS,
-    DAY_IT,
-    DAY_OF_MONTH,
-    DAY_THING,
-    ELIDED_AGAIN,
-    ELIDED_ASK,
-    ELIDED_NAMES,
-    ELIDED_NOT_SURE,
-    ELIDED_WORDS,
-    HOW_MANY_OF_MINE,
-    MEMORY_POINTER,
-    MISSED_CATCH_UP,
-    PLAN_ASKS,
-    PLAN_MINE,
-    POINTS_BACK,
-    SAID_ASK,
-    SAID_AS_A_SENTENCE,
-    THAT_DATE,
-    TIME_ASKS,
-    TIME_IT,
-    TIME_THING,
-    TOPIC_ASK,
-    WEEKDAY_WORD,
-    WHAT_I_SAID,
-    WHEN_ASKS,
-    WHEN_END_ASK,
-    WHEN_END_WORD,
-    WHEN_INVERTED,
-    WHEN_INVERTED_SUBJECT,
-    WHEN_PLAN,
-    WHEN_QUALITY,
-    WHEN_START_ASK,
-    WHEN_THING,
-    WHEN_THING_VERB,
-    WHEN_VAGUE,
-    WHEN_VERB,
-    WHERE_PLAN,
-)
+from .memory_tables import (ASK_WITHOUT_MY, DAY_IT, DAY_THING, HOW_MANY_OF_MINE, PLAN_MINE,
+                            TIME_ASKS, TIME_IT, TIME_THING, TOPIC_ASK, WHERE_PLAN)
 
 
 
@@ -2408,7 +2329,37 @@ from bot.memory.corrected import (  # moved out whole: see bot/memory/corrected.
     _what_took_its_place,
     _without_the_naming_verb,
 )
-from bot.memory.store_replies import (A_HAVE_QUESTION, _a_bare_limit_ask, ACTIVITY_ASK, ANSWER_MODULES, ASK_WITHOUT_MY, BARE_WHAT_I_DO, CANT_HAVE, CAN_HAVE, CAN_THEY_HAVE, CAN_THEY_HAVE_A_FOOD, CHECK_FOLLOWED, DAY_IT, DAY_THING, EAT_ASK, FIRST_ASK, MONTHS, NO_RECORD, OTHER_FACT, PLAN_MINE, POINTS_BACK_AT_IT, THEM, TIME_ASKS, TIME_IT, TIME_THING, TOPIC_ASK, WHERE_PLAN, WHOLE_ASK, YES_NO_ASK, _RELATION, _a_feeling_about_what_they_said, _a_limit_kept_for_them, _a_number, _a_state_that_was, _a_thing, _a_whole_answer_to_hand_back, _about_the_bot_here, _about_this_chat, _activity_line, _after_the_yes_no_frame, _age_compare, _animal_family, _asks, _asks_about_someone, _at_the_clock, _bare, _behind_a_remembering_frame, _can_close, _canon_relation, _corrects, _count_of_a_kind, _diet_reply, _folded, _halves, _how_far_along, _is_or_are, _kind, _longest, _name_they_answered, _named_person, _names_its_thing, _names_minutes, _names_the_thing, _other_person_reply, _person_from_pronoun, _plain_line, _plans_reply, _reads_as_the_invitation, _remembers_fact, _repeat_ask, _restated, _says_something, _says_the_verb, _seconds, _sentences, _someone_else_named, _statement, _summary_reply, _swapped_lines, _the_animal_of_the_pick, _the_back_this_turn, _the_bot_name, _the_budget_on_the_answer, _the_call_from_the_advice, _the_condition, _the_job_was_just_said, _the_limit_the_last_line_gave, _the_limit_they_share, _the_person_still_in_hand, _the_plans_in_date_order, _the_prep_day, STATES_A_LIMIT, _the_same_fact_about_someone, _the_store_reply, _the_things, _told_phrase, _vary, _which_comes_first, _who_is_the_name_reply, _yours, ack, company, content, current, decided, enough_reply, extract, family_name, forget, guest, how_many, last_user, name, note, others, pick, plans, rates_reader, re, recall, recent, remember, remember_other, reminded, stem, thread, told_about, units, until_answer, user, when_answer, REPEAT_WORDS, asks_again)
+from bot.memory.store_replies import (A_HAVE_QUESTION, _a_bare_limit_ask, ACTIVITY_ASK,
+                                      ANSWER_MODULES, ASK_WITHOUT_MY, BARE_WHAT_I_DO, CANT_HAVE,
+                                      CAN_HAVE, CAN_THEY_HAVE, CAN_THEY_HAVE_A_FOOD,
+                                      CHECK_FOLLOWED, DAY_IT, DAY_THING, EAT_ASK, FIRST_ASK,
+                                      MONTHS, NO_RECORD, OTHER_FACT, PLAN_MINE, POINTS_BACK_AT_IT,
+                                      THEM, TIME_ASKS, TIME_IT, TIME_THING, TOPIC_ASK, WHERE_PLAN,
+                                      WHOLE_ASK, YES_NO_ASK, _RELATION,
+                                      _a_feeling_about_what_they_said, _a_limit_kept_for_them,
+                                      _a_number, _a_state_that_was, _a_thing,
+                                      _a_whole_answer_to_hand_back, _about_the_bot_here,
+                                      _about_this_chat, _activity_line, _after_the_yes_no_frame,
+                                      _animal_family, _asks, _asks_about_someone, _bare,
+                                      _behind_a_remembering_frame, _can_close, _canon_relation,
+                                      _diet_reply, _folded, _halves, _how_far_along, _kind,
+                                      _longest, _name_they_answered, _named_person,
+                                      _names_its_thing, _names_minutes, _names_the_thing,
+                                      _other_person_reply, _person_from_pronoun, _plain_line,
+                                      _plans_reply, _reads_as_the_invitation, _repeat_ask,
+                                      _says_something, _says_the_verb, _sentences,
+                                      _someone_else_named, _statement, _the_animal_of_the_pick,
+                                      _the_back_this_turn, _the_budget_on_the_answer,
+                                      _the_call_from_the_advice, _the_job_was_just_said,
+                                      _the_limit_the_last_line_gave, _the_limit_they_share,
+                                      _the_person_still_in_hand, _the_prep_day, STATES_A_LIMIT,
+                                      _the_same_fact_about_someone, _the_store_reply, _told_phrase,
+                                      _vary, ack, company, content, current, decided, enough_reply,
+                                      extract, family_name, forget, guest, how_many, last_user,
+                                      name, note, others, pick, plans, rates_reader, re, recall,
+                                      recent, remember, remember_other, reminded, stem, thread,
+                                      told_about, units, until_answer, user, when_answer,
+                                      REPEAT_WORDS, asks_again)
 
 
 
