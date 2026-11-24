@@ -45,7 +45,9 @@ def _stable_repr(value, depth=0):
     if isinstance(value, types.FunctionType):
         return "fn:" + value.__name__
     text = repr(value)
-    return BIG_INT.sub("N", ADDRESS.sub("", text))
+    # "<bot.x.y.Name object>": the module the class lives in is not part of what the object is
+    text = re.sub(r"<(?:[A-Za-z_][\w]*\.)+([A-Za-z_]\w*) object>", r"<\1 object>", ADDRESS.sub("", text))
+    return BIG_INT.sub("N", text)
 
 
 def _describe_one(name, value):
