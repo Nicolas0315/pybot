@@ -28,10 +28,12 @@ ROOT = os.path.dirname(HERE)
 sys.path.insert(0, ROOT)
 sys.path.insert(0, os.path.join(HERE, "support"))
 
+import clock  # noqa: E402
 import corpus  # noqa: E402
 import probe  # noqa: E402
 import record  # noqa: E402
 import snapshot  # noqa: E402
+clock.freeze()  # the bot says the date and the time; the recorded replies were made at this moment
 from bot.runtime import reply  # noqa: E402
 
 FULL = bool(os.environ.get("PYBOT_FULL"))

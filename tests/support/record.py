@@ -23,6 +23,7 @@ ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, ROOT)
 sys.path.insert(0, HERE)
 
+import clock  # noqa: E402
 import corpus  # noqa: E402
 import probe  # noqa: E402
 import snapshot  # noqa: E402
@@ -80,6 +81,7 @@ def record(only=None):
     """Write the golden file. `only` is a set of {"replies", "namespaces"} to refresh in an existing file."""
     if os.environ.get("PYTHONHASHSEED") != HASH_SEED:
         raise SystemExit("run with PYTHONHASHSEED=%s so sets and the patterns built from them keep one order" % HASH_SEED)
+    clock.freeze()
     from bot.runtime import reply
     if only and os.path.exists(GOLDEN):
         with open(GOLDEN, encoding="utf-8") as handle:
