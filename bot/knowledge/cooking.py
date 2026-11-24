@@ -12880,8 +12880,7 @@ ENTRIES.append(entry(
 # come from and nothing is bound twice: `follow_up` and `first_plan` are what other modules ask
 # this file for, `minutes_said` what the tests ask for, and `_clean` and `_said_words` are read by
 # `a_dinner_without` below.
-from .cooking_more import (ENTRIES as _TAIL_ENTRIES, PLAN_KEYS, asks_a_food_fact,
-                           first_plan, follow_up, minutes_said, plan_recent, remembered,
-                           wants, _clean, _said_words)
+from .cooking_more import (ENTRIES as _TAIL_ENTRIES, asks_a_food_fact, first_plan, follow_up,
+                           plan_recent, remembered, wants, _clean, _said_words)
 
 ENTRIES.extend(_TAIL_ENTRIES)

@@ -23,7 +23,6 @@ import re
 from . import holds as earlier
 from .topics import carried_topic as the_carried_topic, is_ack, subject as the_subject
 from ..compose import trouble
-from ..compose.badnews import reads_as_bad_news
 from ..understanding import kinds
 
 # A line that opens on one of these carries the last answer on rather than reacting to it:

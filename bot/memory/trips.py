@@ -25,7 +25,7 @@ where to go, a trip already taken ("we went to cornwall in august"), a plan that
 import re
 
 from . import ack, facts, last_bot, not_a_trip, plan_line, user
-from .facts import DAYS, KIN, MONTHS, NOT_PLACES, PLACE_VERBS
+from .facts import DAYS, KIN, MONTHS
 
 # The verb that says a trip is coming, and the "to <place>" that follows it. "i'm going to be
 # late", "we're going to see", "it's going to rain" and "going to try" are the same shape and not

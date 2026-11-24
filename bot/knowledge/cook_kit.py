@@ -24,9 +24,8 @@ and the vessel phrases), imported rather than copied.
 """
 import re
 
-from .cooking import (_BURNT_EATING_REPLY, _BURNT_ON_A_PAN, _FOOD, _PAN_DISH,
-                      _REMOVAL_FROM_A_PAN, _VESSEL_PHRASES, _burnt_on_the_pan, _says,
-                      _words_and_text)
+from .cooking import (_BURNT_EATING_REPLY, _FOOD, _PAN_DISH, _REMOVAL_FROM_A_PAN, _VESSEL_PHRASES,
+                      _says, _words_and_text)
 from .lookup import entry
 
 ANSWERS = ("cooking", "food-and-drink", "home-and-diy")

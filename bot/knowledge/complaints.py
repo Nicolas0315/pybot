@@ -15,7 +15,7 @@ bot/knowledge/lookup.py, so "what can i do about my dandruff" reaches the dandru
 
 import re
 
-from .lookup import ASK_ABOUT, TOOTH_OR_GUM, TOOTH_OUT, entry
+from .lookup import ASK_ABOUT, TOOTH_OR_GUM, entry
 
 # The red flags that make any of these a doctor's question rather than a chemist's. Kept in one
 # place because the same four symptoms turn several of these entries into "go now", and a line

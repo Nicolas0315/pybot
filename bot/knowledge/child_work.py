@@ -11,7 +11,6 @@ here, which is what lets two changes to the knowledge base be merged in either o
 """
 import re
 
-from ..understanding import lexicon
 from .lookup import entry
 
 

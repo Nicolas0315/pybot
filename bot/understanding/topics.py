@@ -16,7 +16,7 @@ import re
 
 from . import lexicon
 from .body import A_GUT_ONLY
-from .kinds import ADDRESS_WORDS, VERDICT_NOUNS, _asks_back, a_bad_verdict, small_talk_only
+from .kinds import ADDRESS_WORDS, _asks_back, a_bad_verdict, small_talk_only
 from .normalize import LEXICON as COMMON_WORDS
 from .normalize import background_positions, reason_positions
 from . import normalize
