@@ -73,6 +73,28 @@ def defined_names(module):
     return sorted(names)
 
 
+def observe(spec):
+    """What the namespace and probe checks compare, measured in this process.
+
+    `spec` is {"namespaces": {module: [names]}, "probes": {module: [names]}}. The order is the one the
+    record is made in: every namespace first, while nothing has run and the lazily filled caches are
+    empty, then every probe. Run it in a process of its own (`record.py observe`, spec on stdin), so what
+    ran earlier in a test run cannot change the answer.
+    """
+    clock.freeze()
+    from bot.runtime import reply
+    probe_lines = probe.lines_for_probe(corpus.sample(PROBE_LINES, seed=7))
+    memory_for = memory_factory(reply)
+    modules = {name: importlib.import_module(name) for name in dict.fromkeys(list(spec["namespaces"]) + list(spec["probes"]))}
+    namespaces = {}
+    for name in spec["namespaces"]:
+        wanted = set(spec["namespaces"][name])
+        namespaces[name] = {n: d for n, d in snapshot.describe(modules[name], skip=LAZY).items() if n in wanted}
+    probes = {name: probe.probe(modules[name], probe_lines, memory_for, only=set(spec["probes"][name]))
+              for name in spec["probes"]}
+    return {"namespaces": namespaces, "probes": probes}
+
+
 def memory_factory(runtime_reply):
     cache = {}
 
@@ -124,7 +146,9 @@ def record(only=None, modules=None):
     return golden
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and sys.argv[1:] == ["observe"]:
+    print(json.dumps(observe(json.load(sys.stdin))))
+elif __name__ == "__main__":
     only_modules = None
     args = []
     for a in sys.argv[1:]:
