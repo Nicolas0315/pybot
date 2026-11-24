@@ -28,13 +28,21 @@ import corpus  # noqa: E402
 import probe  # noqa: E402
 import snapshot  # noqa: E402
 
-MODULES = ["bot.compose.fallback", "bot.modules.chat"]
+MODULES = ["bot.compose.fallback", "bot.modules.chat",
+           "bot.memory.store_replies", "bot.modules.answers", "bot.knowledge.home_craft", "bot.memory.facts",
+           "bot.memory.topics", "bot.knowledge.lookup", "bot.understanding.normalize", "bot.memory.ack",
+           "bot.compose.verdict", "bot.memory.repeat", "bot.knowledge.maths", "bot.modules.arbiter",
+           "bot.compose.fallback_chain", "bot.knowledge.cooking", "bot.modules.memory_store",
+           "bot.understanding.kinds"]
 SINGLES = 800
 TRIPLES = 300
 PROBE_LINES = 40
 GOLDEN = os.path.join(ROOT, "tests", "golden", "characterisation.json")
 # Filled in on first use, so what they hold depends on which line the bot has already read.
-LAZY = {"_VENUE_RE", "_A_MY_PERSON"}
+LAZY = {"_VENUE_RE", "_A_MY_PERSON", "_ACK_PATTERN", "_ANY_FOOD_TEXT", "_BAKE_ALIASES", "_FOODS_SAID",
+        "_PANTRY_AS_WORDS", "_ASK_FRAME_FORMS", "_FRAME_PRONOUN_FORMS", "_FRAME_STARTS", "_TAIL_ASK_WORDS",
+        "_TAKE_OFF", "_PEOPLE", "_CARD_OPENINGS", "_NAME_WORDS", "ACK_POOL", "_FRAME", "_SOUND_CUES",
+        "_A_WORD_THE_BOT_WRITES"}
 # Sets and the patterns built from them come out in a different order in every process unless the
 # hash seed is fixed, so the namespace and probe records are made and checked with this seed.
 HASH_SEED = "0"
@@ -77,7 +85,7 @@ def memory_factory(runtime_reply):
     return memory_for
 
 
-def record(only=None):
+def record(only=None, modules=None):
     """Write the golden file. `only` is a set of {"replies", "namespaces"} to refresh in an existing file."""
     if os.environ.get("PYTHONHASHSEED") != HASH_SEED:
         raise SystemExit("run with PYTHONHASHSEED=%s so sets and the patterns built from them keep one order" % HASH_SEED)
@@ -89,6 +97,18 @@ def record(only=None):
     else:
         only = None
         golden = {"seed": 20261124, "singles": [], "triples": [], "namespaces": {}, "probes": {}}
+    # One order for recording and for checking: every namespace first, while nothing has run and the
+    # lazily filled caches are still empty, then every probe, then the replies.
+    probe_lines = probe.lines_for_probe(corpus.sample(PROBE_LINES, seed=7))
+    memory_for = memory_factory(reply)
+    chosen = modules or MODULES
+    imported = [importlib.import_module(name) for name in chosen]
+    for name, module in zip(chosen, imported):
+        names = defined_names(module)
+        described = snapshot.describe(module)
+        golden["namespaces"][name] = {n: described[n] for n in names if n in described and n not in LAZY}
+    for name, module in zip(chosen, imported):
+        golden["probes"][name] = probe.probe(module, probe_lines, memory_for)
     if only is None or "replies" in only:
         lines = corpus.sample(SINGLES + TRIPLES * 3)
         golden["singles"] = [said(reply, line, {}) for line in lines[:SINGLES]]
@@ -97,14 +117,6 @@ def record(only=None):
         for index in range(0, len(rest), 3):
             memory = {}
             golden["triples"].append([said(reply, line, memory) for line in rest[index:index + 3]])
-    probe_lines = probe.lines_for_probe(corpus.sample(PROBE_LINES, seed=7))
-    memory_for = memory_factory(reply)
-    for name in MODULES:
-        module = importlib.import_module(name)
-        names = defined_names(module)
-        described = snapshot.describe(module)
-        golden["namespaces"][name] = {n: described[n] for n in names if n in described and n not in LAZY}
-        golden["probes"][name] = probe.probe(module, probe_lines, memory_for)
     os.makedirs(os.path.dirname(GOLDEN), exist_ok=True)
     with open(GOLDEN, "w", encoding="utf-8") as handle:
         json.dump(golden, handle, sort_keys=True, indent=0)
@@ -113,7 +125,14 @@ def record(only=None):
 
 
 if __name__ == "__main__":
-    result = record(set(sys.argv[1:]) or None)
+    only_modules = None
+    args = []
+    for a in sys.argv[1:]:
+        if a.startswith("modules="):
+            only_modules = a.split("=", 1)[1].split(",")
+        else:
+            args.append(a)
+    result = record(set(args) or None, only_modules)
     print("singles", len(result["singles"]), "triples", len(result["triples"]),
           {k: len(v) for k, v in result["namespaces"].items()},
           {k: len(v) for k, v in result["probes"].items()})

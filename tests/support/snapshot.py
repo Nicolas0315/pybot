@@ -16,6 +16,9 @@ import re
 import types
 
 ADDRESS = re.compile(r" at 0x[0-9a-fA-F]+")
+# an int this big is a memory address (id()), not a number the bot means
+ADDRESS_FLOOR = 10 ** 8
+BIG_INT = re.compile(r"\b\d{9,}\b")
 
 
 def _digest(text):
@@ -34,12 +37,15 @@ def _stable_repr(value, depth=0):
     if isinstance(value, (set, frozenset)):
         return type(value).__name__ + "{" + ",".join(sorted(_stable_repr(v, depth + 1) for v in value)) + "}"
     if isinstance(value, dict):
+        # a dict keyed by id() has keys that change with every process; only its values are kept
+        if value and all(isinstance(k, int) and not isinstance(k, bool) and k >= ADDRESS_FLOOR for k in value):
+            return "idkeyed{" + ",".join(sorted(_stable_repr(v, depth + 1) for v in value.values())) + "}"
         items = sorted((_stable_repr(k, depth + 1), _stable_repr(v, depth + 1)) for k, v in value.items())
         return "{" + ",".join("%s:%s" % pair for pair in items) + "}"
     if isinstance(value, types.FunctionType):
         return "fn:" + value.__name__
     text = repr(value)
-    return ADDRESS.sub("", text)
+    return BIG_INT.sub("N", ADDRESS.sub("", text))
 
 
 def _describe_one(name, value):

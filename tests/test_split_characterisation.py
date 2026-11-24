@@ -14,6 +14,9 @@ tests/support/record.py on a commit whose behaviour is the one to keep. Three th
   from the same module, with the same signature or the same data, wherever it now lives;
 * what each small function in those modules returns for a fixed set of probe lines.
 
+The tests are numbered because the order matters: the namespace check must run before anything has
+warmed the lazily filled caches, then the probes, then the replies, the same order the record is made in.
+
 A failure after a change meant to keep behaviour means the change altered a reply, lost a name, or
 changed what a function returns. Re-record only when the change to the bot's answers is intended.
 """
@@ -56,13 +59,13 @@ class SplitCharacterisation(unittest.TestCase):
         self.assertEqual(len(GOLDEN["singles"]), record.SINGLES)
         self.assertEqual(len(GOLDEN["triples"]), record.TRIPLES)
 
-    def test_single_lines_get_the_recorded_reply(self):
+    def test_4_single_lines_get_the_recorded_reply(self):
         count = record.SINGLES if FULL else SAMPLE_SINGLES
         for line, expected in list(zip(self.lines, GOLDEN["singles"]))[:count]:
             with self.subTest(line=line):
                 self.assertEqual(record.said(reply, line, {}), expected)
 
-    def test_runs_of_three_get_the_recorded_replies(self):
+    def test_3_runs_of_three_get_the_recorded_replies(self):
         rest = self.lines[record.SINGLES:]
         count = record.TRIPLES if FULL else SAMPLE_TRIPLES
         for index in range(count):
@@ -73,7 +76,7 @@ class SplitCharacterisation(unittest.TestCase):
                 self.assertEqual(got, GOLDEN["triples"][index])
 
     @NEEDS_SEED
-    def test_every_defined_name_is_still_reachable_and_unchanged(self):
+    def test_1_every_defined_name_is_still_reachable_and_unchanged(self):
         for name, recorded in GOLDEN["namespaces"].items():
             module = importlib.import_module(name)
             described = snapshot.describe(module, skip=record.LAZY)
@@ -83,7 +86,7 @@ class SplitCharacterisation(unittest.TestCase):
                     self.assertEqual(described[member], was)
 
     @NEEDS_SEED
-    def test_small_functions_return_what_they_did(self):
+    def test_2_small_functions_return_what_they_did(self):
         lines = probe.lines_for_probe(corpus.sample(record.PROBE_LINES, seed=7))
         memory_for = record.memory_factory(reply)
         for name, recorded in GOLDEN["probes"].items():
