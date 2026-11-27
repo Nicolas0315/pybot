@@ -5,8 +5,8 @@
 
 Without PYTHONHASHSEED=0 the namespace and probe checks are skipped (the reply checks still run).
 
-The expected values live in tests/golden/characterisation.json and are made by
-tests/support/record.py on a commit whose behaviour is the one to keep. Three things are compared:
+The expected values live in tests/golden/characterisation.json, with interpreter-specific
+differences in companion files recorded from the same pre-split code. Three things are compared:
 
 * what the bot replies to a few hundred lines taken from its own source, alone and in runs of three
   that share a memory;
@@ -18,7 +18,6 @@ A failure after a change meant to keep behaviour means the change altered a repl
 changed what a function returns. Re-record only when the change to the bot's answers is intended.
 """
 import importlib
-import json
 import os
 import sys
 import unittest
@@ -30,6 +29,7 @@ sys.path.insert(0, os.path.join(HERE, "support"))
 
 import clock  # noqa: E402
 import corpus  # noqa: E402
+import golden  # noqa: E402
 import probe  # noqa: E402
 import record  # noqa: E402
 import snapshot  # noqa: E402
@@ -42,8 +42,7 @@ NEEDS_SEED = unittest.skipUnless(SEEDED, "set PYTHONHASHSEED=%s: sets and the pa
 SAMPLE_SINGLES = 150
 SAMPLE_TRIPLES = 50
 
-with open(record.GOLDEN, encoding="utf-8") as handle:
-    GOLDEN = json.load(handle)
+GOLDEN = golden.load(record.GOLDEN)
 
 
 class SplitCharacterisation(unittest.TestCase):
