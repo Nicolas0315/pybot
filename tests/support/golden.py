@@ -14,12 +14,16 @@ def load(path):
 
     stem, suffix = os.path.splitext(path)
     with open(stem + "-py38-310" + suffix, encoding="utf-8") as handle:
-        differences = json.load(handle)
+        legacy = json.load(handle)
 
-    for section in ("singles", "triples"):
-        for index, expected in differences.get(section, {}).items():
-            golden[section][int(index)] = expected
-    for section in ("namespaces", "probes"):
-        for module, members in differences.get(section, {}).items():
-            golden[section][module].update(members)
+    recordings = [legacy]
+    if sys.version_info < (3, 9):
+        recordings.append(legacy.get("py38", {}))
+    for differences in recordings:
+        for section in ("singles", "triples"):
+            for index, expected in differences.get(section, {}).items():
+                golden[section][int(index)] = expected
+        for section in ("namespaces", "probes"):
+            for module, members in differences.get(section, {}).items():
+                golden[section][module].update(members)
     return golden

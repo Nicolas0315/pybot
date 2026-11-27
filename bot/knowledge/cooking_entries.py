@@ -18,36 +18,50 @@ from .shopping import not_a_present
 from .body import a_persons_temperature
 
 from . import cooking as _cooking_tables
-from .cooking import (DECIDING, _line, missing, without, BAKED_GOODS_WORDS, CALORIE_ASKS,
-                      COMING_APART, COOK_VERBS, COOK_WORDS, DEFINITION_WORDS, DIABETIC_PLATE,
-                      FOOD_CALORIES, FOOD_CALORIE_MEALS, FOOD_NUTRIENTS, FREEZER_KEEP,
-                      FREEZE_FACTS, GLUTEN_FACT_ASKS, GLUTEN_FACT_FOODS, GLUTEN_FREE_ASKS,
-                      GLUTEN_FREE_DISHES, KEEPING, KEEP_ASK, LEAFY, LEAFY_AVOID, MEATLESS_ROAST,
-                      NOT_A_COOKING_LINE, OPEN_ASK, PET_LINE_WORDS, PLAN_NAMES, STAPLE_ASK,
-                      STORAGE, WANT_SOMETHING_ELSE, _BAKE_FAULT, _BAKE_THING, _CHEAP_AVOID,
-                      _EGG_DISH, _EGG_FAULT, _EGG_SAUCE, _FOOD, _A_TASTE, _FREEZE_AVOID,
-                      _GLUTEN_FREE_SKIP, _GRAIN_FOOD, _GRAIN_WORD, _MASH_NOT_THIS, _MEAL_ASK_AVOID,
-                      _NOT_MINE, _NO_MEAT, _NUTRIENT_ASK_WORDS, _NUTRIENT_WORDS, _OUT_ASK,
-                      _STAPLE_NAMES, _SWAP_ASK, _WET_FOOD, asks_a_gluten_fact, _bake,
-                      _learn_to_cook, _not_a_portion_ask, _BAKE_FOLLOW_SHAPES, _BAKE_KEEP_SHAPES,
-                      _BAKE_KEEPING, _BAKED_GOODS, _NO_CAKE_RISE, _NO_LOAF_RISE, _bake_follow,
-                      _bake_keep, _gummy, _a_soft_fruit_is_still_a_cooking_question, _bake_always,
-                      _bake_burning, _bake_fault, _bake_fruit, _baked_keep, _body, _bread,
-                      _bread_rise_answer, _breakfast_ideas, _burnt_dish, _cake_fault, _calories,
-                      _cauliflower_rice, _chicken_time, _chocolate, _coffee_fault, _container_keep,
-                      _cook_word, _cookies, _dip_fault, _dough, _dry, _egg_fault, _eggs,
-                      _falls_apart, _flat, _free_of_gluten_fact, _freeze_food, _gluten_free,
-                      _grainy, _MINCE_GRAIN_DISH, _MINCE_GRAIN_WORD, _mince_grainy, _crowd,
-                      _greasy, _herbs_keep, _honey_age, _kids_veg, _bans_of, _legs, _lentils,
-                      _lumpy, _lunch_ideas, avoids_for_the_one_talked_about, _meal_ideas,
-                      _meal_plan, _meat_defrost, _mince, _non_stick_pan, _nut_free, _nutrients,
-                      _oil_smoking, _pancake_batch, _pancakes, _pasta_cook, _pastry_fault,
-                      _popcorn_keep, _popcorn_make, _protein, _pudding_ideas, _pulses,
-                      _rest_the_meat, _rice_time, _roast_joint, _roast_shopping, _salty, _scramble,
-                      _sides, _jacket, _jam_make, _mushroom_wash, _poach_fish, _soggy_lunch, _soup,
-                      _split, _staple, _tea_reply, _stuck_jar, _sugar_work, _sweet_potato,
-                      _tenders_are_a_piece, _tenders_method, _thighs, _time_budget, _tin_answer,
-                      _tough, _turkey, _turkey_cut, _undercooked, _vegan_bake, _watery, entry)
+from ..knowledge_parts.cooking_part_01 import (
+    BAKED_GOODS_WORDS, KEEP_ASK, OPEN_ASK, PET_LINE_WORDS, STAPLE_ASK, _FOOD, _A_TASTE, _baked_keep,
+    _chicken_time, _container_keep, _kids_veg, _legs, _pancake_batch, _pancakes, _rest_the_meat,
+    _stuck_jar, _sweet_potato, _tenders_method, _thighs,
+)
+from ..knowledge_parts.cooking_part_02 import (
+    COMING_APART, DIABETIC_PLATE, _WET_FOOD, _BAKE_KEEPING, _BAKED_GOODS, _bake_fruit, _bread,
+    _dough, _dry, _falls_apart, _lumpy, _protein, _jacket, _jam_make, _mushroom_wash, _poach_fish,
+    _watery,
+)
+from ..knowledge_parts.cooking_part_03 import (
+    MEATLESS_ROAST, WANT_SOMETHING_ELSE, _CHEAP_AVOID, _EGG_DISH, _EGG_FAULT, _EGG_SAUCE,
+    _FREEZE_AVOID, _GRAIN_FOOD, _GRAIN_WORD, _MEAL_ASK_AVOID, _chocolate, _cookies, _egg_fault,
+    _eggs, _flat, _grainy, _MINCE_GRAIN_DISH, _MINCE_GRAIN_WORD, _mince, _pasta_cook, _popcorn_keep,
+    _popcorn_make, _roast_joint, _roast_shopping, _salty, _scramble, _soup, _tough, _turkey,
+    _turkey_cut,
+)
+from ..knowledge_parts.cooking_part_04 import (
+    DECIDING, _line, CALORIE_ASKS, COOK_VERBS, FREEZER_KEEP, GLUTEN_FREE_ASKS, GLUTEN_FREE_DISHES,
+    KEEPING, STORAGE, _GLUTEN_FREE_SKIP, _NUTRIENT_WORDS, _OUT_ASK, _gluten_free, _honey_age,
+    _lentils,
+)
+from ..knowledge_parts.cooking_part_05 import (
+    COOK_WORDS, DEFINITION_WORDS, LEAFY, LEAFY_AVOID, NOT_A_COOKING_LINE, _MASH_NOT_THIS, _NO_MEAT,
+    _bread_rise_answer, _cake_fault, _coffee_fault, _greasy, _herbs_keep, _non_stick_pan,
+    _pastry_fault, _rice_time, _split, _sugar_work, _tin_answer, _undercooked,
+)
+from ..knowledge_parts.cooking_part_06 import (
+    _BAKE_FOLLOW_SHAPES, _BAKE_KEEP_SHAPES, _bake_follow, _bake_keep, _gummy, _dip_fault,
+)
+from ..knowledge_parts.cooking_part_07 import (
+    missing, without, GLUTEN_FACT_ASKS, GLUTEN_FACT_FOODS, _NUTRIENT_ASK_WORDS, _STAPLE_NAMES,
+    _SWAP_ASK, asks_a_gluten_fact, _bake, _learn_to_cook, _not_a_portion_ask, _NO_CAKE_RISE,
+    _NO_LOAF_RISE, _a_soft_fruit_is_still_a_cooking_question, _bake_burning, _body,
+    _breakfast_ideas, _burnt_dish, _calories, _cauliflower_rice, _cook_word, _free_of_gluten_fact,
+    _freeze_food, _mince_grainy, _crowd, _bans_of, _lunch_ideas, avoids_for_the_one_talked_about,
+    _meal_ideas, _meal_plan, _meat_defrost, _nut_free, _nutrients, _oil_smoking, _pudding_ideas,
+    _pulses, _sides, _soggy_lunch, _staple, _tea_reply, _tenders_are_a_piece, _time_budget,
+    _vegan_bake,
+)
+from .cooking import (
+    FOOD_CALORIES, FOOD_CALORIE_MEALS, FOOD_NUTRIENTS, FREEZE_FACTS, PLAN_NAMES, _BAKE_FAULT,
+    _BAKE_THING, _NOT_MINE, _bake_always, _bake_fault, entry,
+)
 
 # The cuts and the whole things that had no method card at all: "how long to cook lamb chops",
 # "how do i cook a lamb shank", "how do i cook kidneys" and "how do i cook a whole fish" were

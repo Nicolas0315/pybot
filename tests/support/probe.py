@@ -8,7 +8,12 @@ is described by the exception's type, so a change from an answer to an error is 
 import copy
 import hashlib
 import inspect
+import re
 import types
+
+# an int this long is a memory address (id()) when a result shows one; it differs in every process
+BIG_INT = re.compile(r"\b\d{9,}\b")
+HEX_ADDRESS = re.compile(r" at 0x[0-9a-fA-F]+")
 
 EDGE = ["", " ", "what", "hello", "x" * 400, "my sister has arrived", "i lost my job today",
         "can you help me with my dog", "what is the weather like in paris", "no", "it is not that",
@@ -21,7 +26,7 @@ def _digest(text):
 
 def _outcome(call):
     try:
-        return repr(call())
+        return BIG_INT.sub("N", HEX_ADDRESS.sub("", repr(call())))
     except BaseException as error:  # a probe line may legitimately raise; the type is the record
         return "!" + type(error).__name__
 

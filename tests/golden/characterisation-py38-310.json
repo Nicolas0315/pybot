@@ -1,11 +1,67 @@
 {
   "namespaces": {
+    "bot.knowledge.cooking": {
+      "_MEAL_METHODS": "tuple e66e63623fe1"
+    },
+    "bot.memory.ack": {
+      "A_DATE_TOLD": "Pattern de049c7c97c6"
+    },
+    "bot.memory.facts": {
+      "CHAINED_PERSON": "Pattern 3cf3c4be638e",
+      "CHAINED_RELATION_AGE": "Pattern 50b890405106",
+      "CORRECTION_DATE": "Pattern 6e007e9b1f4a",
+      "CORRECTION_DATE_GOING": "Pattern b5a604db4fb9",
+      "CORRECTION_GOING_MOVED": "Pattern 23955bdefafb",
+      "CORRECTION_HEDGED": "Pattern 66fa214fa555",
+      "DATE_VALUE": "Pattern 4c6def708830",
+      "GROUP_NAMED_AGES": "Pattern ce7e586263a3",
+      "GROUP_NAMED_NAMES": "Pattern a2b13f71316b",
+      "KIN_WORDS": "tuple d00bd466fd3c",
+      "OTHER_BIRTHDAY": "Pattern 425492901329",
+      "OTHER_CALLED": "Pattern c5953badf7d2",
+      "OTHER_NAMED_BARE": "Pattern d5e7a969a67d",
+      "OTHER_NAMED_BEFORE_VERB": "Pattern 8fb6037d331e",
+      "OTHER_NAMED_CAPITAL": "Pattern fac514c71f56",
+      "OTHER_NAMED_MIDLINE": "Pattern d14d9c237d20",
+      "OTHER_NAME_IS": "Pattern e1db3f6f26ee",
+      "OTHER_NAME_POSSESSIVE": "Pattern dcd38af0ff94",
+      "RELATION_AGE": "Pattern 71e257c24009",
+      "RELATION_BARE_NAME": "Pattern 6311ad33c8a9",
+      "RELATION_HAVE_NAME": "Pattern 6a17f6dce014",
+      "RELATION_NAME": "Pattern 454be15ca2bb",
+      "RELATION_NAMED_AGE": "Pattern 0bd4af812251",
+      "RELATION_PAIR_NAMES": "Pattern a472c167875f",
+      "RELATION_POSSESSIVE_AGE": "Pattern da03c1a7e426",
+      "RELATION_POSSESSIVE_NAME": "Pattern 479134691beb",
+      "RELATION_WHOS_AGE": "Pattern 6c226200b9d9",
+      "_A_PERSON": "str e82a7dd8080e",
+      "_GOING_DATE": "str 3ce63abc6254",
+      "_MONTH_ALT": "str ce0d5f49e8b6",
+      "_NOT_A_PERSON_NAME": "str a2086a1435c9",
+      "_RELATION_WORDS": "str 9d4a67afe918"
+    },
+    "bot.memory.store_replies": {
+      "MONTH_SAID": "Pattern 82a5decc65dc"
+    },
+    "bot.memory.topics": {
+      "WHO_SAID": "Pattern f42a390daebe",
+      "WHO_SAID_THIRD": "Pattern 96fc9742506a",
+      "_WISH_RE": "Pattern 7dd2a8ed456c"
+    },
     "bot.modules.chat": {
       "A_VERDICT_ON_ITS_OWN": "str b3fa3a0a3898",
       "A_VERDICT_WITH_A_ROLE": "str 1203fc8ff371",
       "BOT_FEELING_ASK": "Pattern 8e39fb7bac13",
       "OWN_TRAIT": "Pattern 2dec96399e4f",
       "OWN_WORTH": "Pattern e3b93305f968"
+    },
+    "bot.understanding.normalize": {
+      "PART_THAT_IS_BAD": "Pattern 83ee23444499",
+      "PHRASES": "list 84142ad5441b",
+      "SAID_APART": "Pattern 4acd28c88551",
+      "_A_CLIPPED_HEAD": "Pattern 72e40b85866e",
+      "_A_CLOSING_WORD": "str 6d829d7d70e6",
+      "_BASE": "list 8a64b1a5d097"
     }
   },
   "probes": {
@@ -14,6 +70,67 @@
       "_the_words": "d3a0e6a10872",
       "_the_words_in": "53b9b6feef68",
       "_without_the_idioms": "c33bad70457c"
+    },
+    "bot.compose.verdict": {
+      "_stems": "d6887c497f29",
+      "_subject_words": "e67d4a6ea206",
+      "_the_sign_words": "6ce031ba1eff",
+      "_the_thing": "ca91ad2e6b46",
+      "_word_runs": "e45494a59a29"
+    },
+    "bot.knowledge.lookup": {
+      "_forms": "44c56f77e423",
+      "_part_forms": "c78b29926a5d",
+      "_wanted": "33b5dae01503",
+      "_wanted_bare": "dd31db7b8c78",
+      "_work_out_forms": "f2395901d765"
+    },
+    "bot.memory.repeat": {
+      "_content": "8f58c1145397",
+      "_the_stems": "a27b3e4becd1"
+    },
+    "bot.memory.store_replies": {
+      "_content_words": "0650a87a3000",
+      "_plain_words": "c33bad70457c",
+      "_seen": "fb41baa9e053",
+      "_summary_words": "31ff0871bf1d",
+      "_tokens": "2e180fd10926"
+    },
+    "bot.memory.topics": {
+      "_the_cause_words": "85387a9a138a",
+      "forms": "62e7bed40fce"
+    },
+    "bot.modules.answers": {
+      "_carries": "fd81f533e393",
+      "_circumstances": "aa7b8dc79735",
+      "_said_before_now": "c33bad70457c"
+    },
+    "bot.modules.arbiter": {
+      "_about": "878b4e353956",
+      "_subject_words": "9c48bcb5e4df",
+      "_the_forms_of": "a3488ee93e2b",
+      "_the_lines_own_words": "b32f0d6c6dd3"
+    },
+    "bot.understanding.kinds": {
+      "_claim_forms": "7c9dd9deb9cf"
+    },
+    "bot.understanding.normalize": {
+      "_a_doubled_letter_typed_once": "6193ecfacb4f",
+      "_double_variants": "287bad808af8",
+      "_extra_vowel": "0138553a0d2a",
+      "_inflections": "5da9ee12e6dd",
+      "_one_vowel_less": "307d9a5b0d9c",
+      "_stems_of": "2684585b8692",
+      "_swapped_pair": "8d5a15401d93",
+      "_two_letters_the_wrong_way_round": "d62de3598862"
+    }
+  },
+  "py38": {
+    "namespaces": {
+      "bot.knowledge.maths": {
+        "_BIN_OPS": "dict cb3da598f740",
+        "_UNARY_OPS": "dict ede9ea7441bb"
+      }
     }
   },
   "singles": {
