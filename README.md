@@ -72,13 +72,21 @@ echo "how long should i boil an egg" | python -m pybot
 
 For a `pybot` command you can run from anywhere, install the clone with `pip install .`.
 
+## Run the tests
+
+Use Python 3.8 or 3.15 to reproduce the pull request checks locally.
+
+```sh
+PYTHONHASHSEED=0 TZ=UTC python -m unittest discover -s tests
+```
+
 ## What is in this repository
 
 | Path | What it holds |
 |---|---|
 | `bot/` | PyBot itself: 528 Python files and about 640,000 lines, exactly as the swarm wrote them |
 | `pybot.py` | the command line shown above. It contains no chatbot logic |
-| `tests/` | tests for the command line: `python -m unittest discover -s tests` |
+| `tests/` | Python tests |
 | `assets/` | the banner and the chart |
 
 Every turn, each module in `bot/modules/` may propose a reply, and an arbiter (`bot/modules/arbiter.py`) picks the one you get. The modules build on four shared parts:
