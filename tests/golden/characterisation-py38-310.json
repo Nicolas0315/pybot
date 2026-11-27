@@ -3,10 +3,6 @@
     "bot.knowledge.cooking": {
       "_MEAL_METHODS": "tuple e66e63623fe1"
     },
-    "bot.knowledge.maths": {
-      "_BIN_OPS": "dict cb3da598f740",
-      "_UNARY_OPS": "dict ede9ea7441bb"
-    },
     "bot.memory.ack": {
       "A_DATE_TOLD": "Pattern de049c7c97c6"
     },
@@ -127,6 +123,14 @@
       "_stems_of": "2684585b8692",
       "_swapped_pair": "8d5a15401d93",
       "_two_letters_the_wrong_way_round": "d62de3598862"
+    }
+  },
+  "py38": {
+    "namespaces": {
+      "bot.knowledge.maths": {
+        "_BIN_OPS": "dict cb3da598f740",
+        "_UNARY_OPS": "dict ede9ea7441bb"
+      }
     }
   },
   "singles": {
