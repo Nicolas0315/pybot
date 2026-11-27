@@ -26,11 +26,21 @@ def _outcome(call):
         return "!" + type(error).__name__
 
 
-def probe(module, lines, memory_for):
-    """{function name: digest} for every one- or two-argument function defined in `module`."""
+def probe(module, lines, memory_for, only=None):
+    """{function name: digest} for every one- or two-argument function defined in `module`.
+
+    "Defined in" is read from the function's `__module__` (the module itself or a `<module>_...` part)
+    when `only` is None, as when recording. After a split the functions live elsewhere, so a check
+    passes the names it recorded in `only` and those are looked up on the module whatever their origin.
+    """
     out = {}
     for name, value in sorted(vars(module).items()):
-        if not isinstance(value, types.FunctionType) or value.__module__ != module.__name__ and not value.__module__.startswith(module.__name__ + "_"):
+        if not isinstance(value, types.FunctionType):
+            continue
+        if only is not None:
+            if name not in only:
+                continue
+        elif value.__module__ != module.__name__ and not value.__module__.startswith(module.__name__ + "_"):
             continue
         try:
             parameters = [p for p in inspect.signature(value).parameters.values()

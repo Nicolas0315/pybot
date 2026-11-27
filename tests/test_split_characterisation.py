@@ -87,7 +87,7 @@ class SplitCharacterisation(unittest.TestCase):
         memory_for = record.memory_factory(reply)
         for name, recorded in GOLDEN["probes"].items():
             module = importlib.import_module(name)
-            got = probe.probe(module, lines, memory_for)
+            got = probe.probe(module, lines, memory_for, only=set(recorded))
             for member, was in recorded.items():
                 with self.subTest(module=name, member=member):
                     self.assertIn(member, got)
