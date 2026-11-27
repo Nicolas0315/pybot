@@ -7,17 +7,19 @@
 characterisation tests already pin the names the module defines and what the bot replies, but a row
 that went missing or moved down the list would only show if a corpus line happened to reach it. This
 test compares every row, in order, with the rows recorded before the list was cut: for each row a
-digest of all its fields, where a function (a `guard`, a lambda) counts by its bytecode, constants and
-names, not by where it lives or what it is called.
+digest of all its fields, with functions represented by their source syntax and captured values.
+Source positions and interpreter bytecode do not enter the digest.
 
-The golden file is tests/golden/home_craft_rows.json.
+The golden file is tests/golden/home_craft_rows.json. Record it against the rows to preserve.
 """
+import ast
 import hashlib
 import json
 import os
 import sys
 import types
 import unittest
+from functools import lru_cache
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -33,26 +35,41 @@ def _digest(text):
     return hashlib.sha1(text.encode("utf-8")).hexdigest()[:12]
 
 
-def _const(c):
-    if isinstance(c, types.CodeType):
-        return _code(c)
-    if isinstance(c, (set, frozenset)):  # iteration order of strings changes with PYTHONHASHSEED
-        return type(c).__name__ + "{" + ",".join(sorted(_const(v) for v in c)) + "}"
-    if isinstance(c, tuple):
-        return "(" + ",".join(_const(v) for v in c) + ")"
-    return repr(c)
+def _syntax(value):
+    if isinstance(value, ast.AST):
+        # New Python versions can add fields for syntax that this node does not use.
+        fields = tuple((name, _syntax(item)) for name, item in ast.iter_fields(value)
+                       if item is not None and item != [] and (name, item) != ("is_lazy", 0))
+        return type(value).__name__, fields
+    if isinstance(value, list):
+        return [_syntax(item) for item in value]
+    return value
 
 
-def _code(code):
-    consts = [_const(c) for c in code.co_consts]
-    return "code(%s|%s|%s|%s|%s)" % (code.co_code.hex(), code.co_names, code.co_varnames, consts,
-                                    code.co_argcount)
+@lru_cache(maxsize=None)
+def _function_nodes(filename):
+    with open(filename, encoding="utf-8") as handle:
+        tree = ast.parse(handle.read(), filename=filename)
+    nodes = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Lambda):
+            key = node.lineno, "<lambda>"
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            first = node.decorator_list[0] if node.decorator_list else node
+            key = first.lineno, node.name
+        else:
+            continue
+        nodes.setdefault(key, []).append(node)
+    return nodes
 
 
 def _value(value):
     if isinstance(value, types.FunctionType):
-        defaults = [_value(d) for d in (value.__defaults__ or ())]
-        return "fn(%s|%s)" % (_code(value.__code__), defaults)
+        code = value.__code__
+        node, = _function_nodes(code.co_filename)[code.co_firstlineno, value.__name__]
+        captured = tuple(cell.cell_contents for cell in value.__closure__ or ())
+        return "fn(%r|%s|%s|%s)" % (_syntax(node), _value(value.__defaults__),
+                                    _value(value.__kwdefaults__), _value(captured))
     if isinstance(value, (list, tuple)):
         return type(value).__name__ + "[" + ",".join(_value(v) for v in value) + "]"
     return snapshot._stable_repr(value)
@@ -89,7 +106,7 @@ class HomeCraftRows(unittest.TestCase):
         from bot.knowledge import home_craft
 
         rows = home_craft.entries()
-        self.assertEqual([r.id for r in home.ENTRIES[:len(rows)]], [r.id for r in rows])
+        self.assertEqual(row_digests(home.ENTRIES[:len(rows)]), row_digests(rows))
 
 
 if __name__ == "__main__":
