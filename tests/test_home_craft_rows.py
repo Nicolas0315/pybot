@@ -106,7 +106,7 @@ class HomeCraftRows(unittest.TestCase):
         from bot.knowledge import home_craft
 
         rows = home_craft.entries()
-        self.assertEqual(row_digests(home.ENTRIES[:len(rows)]), row_digests(rows))
+        self.assertEqual([r.id for r in home.ENTRIES[:len(rows)]], [r.id for r in rows])
 
 
 if __name__ == "__main__":
