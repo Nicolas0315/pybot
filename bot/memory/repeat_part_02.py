@@ -266,16 +266,18 @@ _FRAME_HEADS = []
 
 
 def _frame_heads():
-    """Every lead-in this module can put in front of a line, as the text it opens on.
+    """Every lead-in repeat can put in front of a line, as the text it opens on.
 
     Read off the templates rather than listed again, so a pool added later - here or below this
     point in the file - is framed like the rest, and a frame can never be stacked on a frame the
-    test does not know about. Found on first use, when the whole module has been read.
+    test does not know about. Read the facade on first use, after it has imported every part.
     """
     if _FRAME_HEADS:
         return _FRAME_HEADS[0]
+    from . import repeat
+
     heads = set()
-    for value in list(globals().values()):
+    for value in list(vars(repeat).values()):
         if not isinstance(value, (tuple, list)):
             continue
         for item in value:

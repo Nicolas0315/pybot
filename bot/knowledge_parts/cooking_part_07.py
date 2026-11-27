@@ -161,6 +161,8 @@ def _not_a_portion_ask(understood):
 
 def _staple(memory, understood):
     """How to cook the everyday staple the line names, or nothing when it names none."""
+    from ..knowledge import cooking
+
     said = [_fold(str(word).lower()) for word in (understood.get("words") or [])]
     joined = " " + " ".join(said) + " "
     for phrase in NOT_A_METHOD:
@@ -175,7 +177,8 @@ def _staple(memory, understood):
             _harvest = _harvest_crops()
             if any(" %s " % crop in joined for crop in _harvest):
                 return None
-    for names, reply in BASICS:
+    # cooking_entries extends the facade's table during import.
+    for names, reply in cooking.BASICS:
         for name in names:
             parts = [_fold(piece) for piece in name.split()]
             size = len(parts)
