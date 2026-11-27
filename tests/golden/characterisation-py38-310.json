@@ -1,0 +1,31 @@
+{
+  "namespaces": {
+    "bot.modules.chat": {
+      "A_VERDICT_ON_ITS_OWN": "str b3fa3a0a3898",
+      "A_VERDICT_WITH_A_ROLE": "str 1203fc8ff371",
+      "BOT_FEELING_ASK": "Pattern 8e39fb7bac13",
+      "OWN_TRAIT": "Pattern 2dec96399e4f",
+      "OWN_WORTH": "Pattern e3b93305f968"
+    }
+  },
+  "probes": {
+    "bot.compose.fallback": {
+      "_names_in": "a6c145b1d042",
+      "_the_words": "d3a0e6a10872",
+      "_the_words_in": "53b9b6feef68",
+      "_without_the_idioms": "c33bad70457c"
+    }
+  },
+  "singles": {
+    "23": "7aa84424167b",
+    "317": "dccc52777bda",
+    "533": "125b281ab768"
+  },
+  "triples": {
+    "195": [
+      "549518c0e3d3",
+      "a820b8e6441f",
+      "705d15046ce9"
+    ]
+  }
+}
