@@ -6,8 +6,8 @@
 The namespace and probe checks run in an interpreter of their own, with PYTHONHASHSEED=0 and nothing
 run before them, so they give the same answer however the tests are ordered.
 
-The expected values live in tests/golden/characterisation.json and are made by
-tests/support/record.py on a commit whose behaviour is the one to keep. Three things are compared:
+The expected values live in tests/golden/characterisation.json, with interpreter-specific
+differences in companion files recorded from the same pre-split code. Three things are compared:
 
 * what the bot replies to a few hundred lines taken from its own source, alone and in runs of three
   that share a memory;
@@ -31,6 +31,7 @@ sys.path.insert(0, os.path.join(HERE, "support"))
 
 import clock  # noqa: E402
 import corpus  # noqa: E402
+import golden  # noqa: E402
 import probe  # noqa: E402
 import record  # noqa: E402
 import snapshot  # noqa: E402
@@ -41,8 +42,7 @@ FULL = bool(os.environ.get("PYBOT_FULL"))
 SAMPLE_SINGLES = 150
 SAMPLE_TRIPLES = 50
 
-with open(record.GOLDEN, encoding="utf-8") as handle:
-    GOLDEN = json.load(handle)
+GOLDEN = golden.load(record.GOLDEN)
 
 
 class SplitCharacterisation(unittest.TestCase):
