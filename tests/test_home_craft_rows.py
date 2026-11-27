@@ -37,6 +37,8 @@ def _digest(text):
 
 def _syntax(value):
     if isinstance(value, ast.AST):
+        if type(value).__name__ == "Index":  # Python 3.8 wraps simple subscripts.
+            return _syntax(value.value)
         # New Python versions can add fields for syntax that this node does not use.
         fields = tuple((name, _syntax(item)) for name, item in ast.iter_fields(value)
                        if item is not None and item != [] and (name, item) != ("is_lazy", 0))
